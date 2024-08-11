@@ -5,6 +5,7 @@ use App\Http\Controllers\dataSiswaController;
 use App\Http\Controllers\kelasController;
 use App\Http\Controllers\keteranganController;
 use App\Http\Controllers\QRController;
+use App\Http\Controllers\rekapController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Foundation\Auth\User;
@@ -69,6 +70,15 @@ Route::post('keterangan/store', [keteranganController::class, 'store']);
 Route::get('keterangan/{keterangan}', [keteranganController::class, 'edit']);
 Route::put('keterangan/{keterangan}', [keteranganController::class, 'update']);
 Route::delete('keterangan/{keterangan}', [keteranganController::class, 'destroy']);
+
+// ROUTER REKAP
+Route::get('rekap', [RekapController::class, 'index']);
+Route::get('/rekap/filter', [RekapController::class, 'filterRekap'])->name('rekap.filter');
+// Route::get('keterangan/tambahketerangan', [keteranganController::class, 'create']);
+// Route::post('keterangan/store', [keteranganController::class, 'store']);
+// Route::get('keterangan/{keterangan}', [keteranganController::class, 'edit']);
+// Route::put('keterangan/{keterangan}', [keteranganController::class, 'update']);
+// Route::delete('keterangan/{keterangan}', [keteranganController::class, 'destroy']);
 
 Route::get('/scan', [WelcomeController::class, 'scan'])->name('scan');
 Route::post('/validasi', [WelcomeController::class, 'validasi'])->name('validasi');
