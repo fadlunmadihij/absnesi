@@ -18,7 +18,7 @@ class WelcomeController extends Controller
     {
         if ($request->ajax()) {
             $qr_code = $request->qr_code;
-            $siswa = data_siswa::where('NISN', $qr_code)->first();
+            $siswa = data_siswa::where('NISN', $qr_code)->with('kelas')->first();
 
             // Validasi waktu absensi
             $startTime = Carbon::createFromTimeString($request->start_time);
@@ -49,7 +49,7 @@ class WelcomeController extends Controller
                     return response()->json([
                         "status" => "success",
                         "nama" => $siswa->nama,
-                        "kelas" => $siswa->kelas->nama,
+                        "kelas" => $siswa->kelas->nama_kelas,
                         "NISN" => $siswa->NISN
                     ], 200);
                 } else {
@@ -61,7 +61,7 @@ class WelcomeController extends Controller
             } else {
                 return response()->json([
                     "status" => "error",
-                    "message" => "Waktu absensi sudah lewat"
+                    "message" => "Waktu absensi sudah lewat :"
                 ], 400);
             }
         }
