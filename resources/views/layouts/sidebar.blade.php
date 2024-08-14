@@ -46,11 +46,17 @@
         <i class="fas fa-fw fa-tachometer-alt"></i>
         <span>Keterangan</span></a>
     </li>
-    
+
     <li class="nav-item">
       <a class="nav-link" href="/rekap">
         <i class="fas fa-fw fa-tachometer-alt"></i>
         <span>Rekap</span></a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/ranking">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Ranking</span></a>
     </li>
 
     <li class="nav-item">
