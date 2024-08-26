@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rekap/filter', [RekapController::class, 'hitungRekap'])->name('hitungRekap.filter');
 
     // ROUTER RANKING
-    Route::get('/ranking', [RankingController::class, 'index']);
+    Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
     Route::post('/ranking/filter', [RankingController::class, 'filterRekap'])->name('ranking.filterRekap');
 
     Route::get('/scan', [WelcomeController::class, 'scan'])->name('scan');

@@ -1,172 +1,164 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use App\Models\data_siswa;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 
 class RankingController extends Controller
 {
     private $bobot = [
-        "H" => 0.70, // Hadir (benefit)
-        "I" => 0.10, // Izin (cost)
-        "S" => 0.05, // Sakit (cost)
-        "A" => 0.15, // Alfa (cost)
+        "izin" => 0.10,
+        "hadir" => 0.70,
+        "alpa" => 0.15,
+        "sakit" => 0.5,
     ];
-
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil data absensi dengan relasi dataSiswa dan namaKelas
-        $absensi = Absensi::with('dataSiswa', 'namaKelas')->get();
+        $kelas = Kelas::all();
 
-        // Buat array untuk menyimpan skor
-        $skorSiswa = [];
+        if ($request->ajax()) {
+            $startDate = $request->start;
+            $endDate = $request->end;
+            $kelasId = $request->kelas_id;
 
-        foreach ($absensi as $item) {
-            $dataSiswa = $item->dataSiswa; // Mengakses relasi dataSiswa
+            $datas = data_siswa::when($kelasId, function ($query) use ($kelasId) {
+                return $query->where('kelas_id', $kelasId);
+            })->withCount([
+                'absen as hadir_count' => function ($query) use ($startDate, $endDate) {
+                    $query->where('status', 'H')
+                        ->when($startDate, function ($query) use ($startDate) {
+                            $query->where('tanggal', '>=', $startDate);
+                        })
+                        ->when($endDate, function ($query) use ($endDate) {
+                            $query->where('tanggal', '<=', $endDate);
+                        });
+                },
+                'absen as izin_count' => function ($query) use ($startDate, $endDate) {
+                    $query->where('status', 'I')
+                        ->when($startDate, function ($query) use ($startDate) {
+                            $query->where('tanggal', '>=', $startDate);
+                        })
+                        ->when($endDate, function ($query) use ($endDate) {
+                            $query->where('tanggal', '<=', $endDate);
+                        });
+                },
+                'absen as sakit_count' => function ($query) use ($startDate, $endDate) {
+                    $query->where('status', 'S')
+                        ->when($startDate, function ($query) use ($startDate) {
+                            $query->where('tanggal', '>=', $startDate);
+                        })
+                        ->when($endDate, function ($query) use ($endDate) {
+                            $query->where('tanggal', '<=', $endDate);
+                        });
+                },
+                'absen as alpa_count' => function ($query) use ($startDate, $endDate) {
+                    $query->where('status', 'A')
+                        ->when($startDate, function ($query) use ($startDate) {
+                            $query->where('tanggal', '>=', $startDate);
+                        })
+                        ->when($endDate, function ($query) use ($endDate) {
+                            $query->where('tanggal', '<=', $endDate);
+                        });
+                }
+            ])->get();
 
-            if (!isset($skorSiswa[$dataSiswa->id])) {
-                $skorSiswa[$dataSiswa->id] = [
-                    'nama' => $dataSiswa->nama,
-                    'skor' => 0
-                ];
-            }
-
-            // Menambahkan skor sesuai dengan status absensi
-            switch ($item->status) {
-                case 'H':
-                    $skorSiswa[$dataSiswa->id]['skor'] += $this->bobot['H'];
-                    break;
-                case 'I':
-                    $skorSiswa[$dataSiswa->id]['skor'] += $this->bobot['I'];
-                    break;
-                case 'S':
-                    $skorSiswa[$dataSiswa->id]['skor'] += $this->bobot['S'];
-                    break;
-                case 'A':
-                    $skorSiswa[$dataSiswa->id]['skor'] += $this->bobot['A'];
-                    break;
-            }
+            $normalisasi = $this->normalisasi($datas);
+            $hasil_akhir2 = $normalisasi->sortByDesc('nilai_akhir')->values()->all();
+            return response()->json($hasil_akhir2, 200);
         }
 
-        // Urutkan skor siswa dari yang tertinggi
-        uasort($skorSiswa, function ($a, $b) {
-            return $b['skor'] <=> $a['skor'];
-        });
-
-        // Menambahkan urutan peringkat
-        $peringkatSiswa = [];
-        $rank = 1;
-        foreach ($skorSiswa as $id => $siswa) {
-            $peringkatSiswa[] = [
-                'rank' => $rank++,
-                'nama' => $siswa['nama'],
-                'skor' => $siswa['skor']
-            ];
-        }
-
-        // Kirim data ke view
-        return view('ranking.index', ['peringkatSiswa' => $peringkatSiswa]);
+        return view('ranking.index', compact('kelas'));
     }
 
-
-
-    public function ranking()
-{
-    // Ambil semua absensi
-    $absensis = Absensi::with('dataSiswa')->get();
-
-    // Buat array untuk menyimpan skor per siswa
-    $skorSiswa = [];
-
-    foreach ($absensis as $absensi) {
-        $dataSiswaId = $absensi->data_siswa_id;
-        $status = $absensi->status;
-
-        // Tentukan bobot berdasarkan status
-        $bobot = [
-            'I' => 0.35,
-            'H' => 0.35,
-            'S' => 0.15,
-            'A' => 0.10,
-        ];
-
-        // Tambahkan bobot ke skor siswa
-        if (!isset($skorSiswa[$dataSiswaId])) {
-            $skorSiswa[$dataSiswaId] = 0;
-        }
-
-        $skorSiswa[$dataSiswaId] += $bobot[$status];
-    }
-
-    // Ambil data siswa
-    $dataSiswa = data_siswa::find(array_keys($skorSiswa));
-
-    // Gabungkan data siswa dengan skor
-    $peringkat = [];
-    foreach ($dataSiswa as $siswa) {
-        $peringkat[] = [
-            'nama' => $siswa->nama,
-            'skor' => $skorSiswa[$siswa->id],
-        ];
-    }
-
-    // Urutkan berdasarkan skor
-    usort($peringkat, function($a, $b) {
-        return $b['skor'] <=> $a['skor'];
-    });
-
-    // Kirim data ke view
-    return view('ranking.index', ['peringkat' => $peringkat]);
-}
-
-
-
-
-    public function showNormalisasi()
+    private function normalisasi($datas)
     {
-        dd($this->normalisasi());
-    }
-
-    private function normalisasi()
-    {
-        $max = $this->nilaiMax();
-        $nilais = Absensi::with('dataSiswa', 'namaKelas')->get();
-
+        $max = $this->max_data($datas);
         $hasil = collect();
-
-        foreach ($nilais as $nilai) {
-            if ($nilai->dataSiswa && $nilai->namaKelas) {
-                $temp = [
-                    "nama" => $nilai->dataSiswa->nama,
-                    "kelas" => $nilai->namaKelas->nama_kelas,
-                    "H" => ($nilai->status == 'H' ? 1 : 0) / ($max['H'] ?: 1),
-                    "I" => ($nilai->status == 'I' ? 1 : 0) / ($max['I'] ?: 1),
-                    "S" => ($nilai->status == 'S' ? 1 : 0) / ($max['S'] ?: 1),
-                    "A" => ($nilai->status == 'A' ? 1 : 0) / ($max['A'] ?: 1),
-                ];
-
-                $temp['nilaiAkhir'] = (
-                    ($temp['H'] * $this->bobot['H']) +
-                    ($temp['I'] * $this->bobot['I']) +
-                    ($temp['S'] * $this->bobot['S']) +
-                    ($temp['A'] * $this->bobot['A'])
-                );
-
-                $hasil->push($temp);
-            }
+        // dd($max);
+        foreach ($datas as $data) {
+            $temp = [
+                "NISN" => $data->NISN,
+                "No_wa" => $data->No_wa,
+                "alamat" => $data->alamat,
+                "alpa_count" => $data->alpa_count,
+                "hadir_count" => $data->hadir_count,
+                "izin_count" => $data->izin_count,
+                "sakit_count" => $data->sakit_count,
+                "nama" => $data->nama,
+                "jenis_kelamin" => $data->jenis_kelamin,
+                "nilai_sakit" => $this->count_sakit($data->sakit_count) / $max["sakit"],
+                "nilai_izin" => $this->count_izin($data->izin_count) / $max["izin"],
+                "nilai_alpa" => $this->count_alpa($data->alpa_count) / $max["alpa"],
+                "nilai_hadir" => $this->count_hadir($data->hadir_count) / $max["hadir"]
+            ];
+            $temp += [
+                "nilai_akhir" => ($temp["nilai_sakit"] * $this->bobot["sakit"]) +
+                    ($temp["nilai_alpa"] * $this->bobot["alpa"]) +
+                    ($temp["nilai_izin"] * $this->bobot["izin"]) +
+                    ($temp["nilai_hadir"] * $this->bobot["hadir"])
+            ];
+            $hasil->push($temp);
         }
 
         return $hasil;
     }
 
-    private function nilaiMax()
+    private function count_izin($data)
     {
-        return [
-            "H" => Absensi::where('status', 'H')->count(),
-            "I" => Absensi::where('status', 'I')->count(),
-            "S" => Absensi::where('status', 'S')->count(),
-            "A" => Absensi::where('status', 'A')->count(),
+        if ($data > 3) {
+            return 3;
+        } else if ($data >= 1) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    private function count_sakit($data)
+    {
+        if ($data > 3) {
+            return 3;
+        } else if ($data >= 1) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    private function count_alpa($data)
+    {
+        if ($data > 3) {
+            return 3;
+        } else if ($data >= 1) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    private function count_hadir($data)
+    {
+        if ($data < 10) {
+            return 1;
+        } else if ($data <= 24) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+
+    private function max_data($data)
+    {
+        $max = [
+            "izin" => $this->count_izin($data->min('izin_count')),
+            "alpa" => $this->count_alpa($data->min('alpa_count')),
+            "sakit" => $this->count_sakit($data->min('sakit_count')),
+            "hadir" => $this->count_hadir($data->max('hadir_count')),
         ];
+
+        return $max;
     }
 }
