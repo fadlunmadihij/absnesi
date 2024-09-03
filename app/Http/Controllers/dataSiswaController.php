@@ -30,7 +30,7 @@ class dataSiswaController extends Controller
             'kelas_id'     => $request->input('kelas_id'),
             'nama'     => $request->input('nama'),
             'alamat'      => $request->input('alamat'),
-            'jeniskelamin'   => $request->input('jeniskelamin'),
+            'jenis_kelamin'   => $request->input('jenis_kelamin'),
             'NISN'      => $request->input('NISN'),
             'No_wa'      => $request->input('No_wa'),
         ]);

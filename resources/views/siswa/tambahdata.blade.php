@@ -25,12 +25,13 @@
             </div>
         </div>
 
-                <select name="jeniskelamin" class="form-control" required>
-                    <option value="" disabled selected>pilih jenis kelamin</option>
-                    @foreach($jeniskelamin as $jk)
-                        <option value="{{ $jk }}">{{ ucfirst($jk) }}</option>
-                    @endforeach
-                </select>
+        <select name="jenis_kelamin" class="form-control" required>
+            <option value="" disabled selected>pilih jenis kelamin</option>
+            @foreach($jeniskelamin as $jk)
+                <option value="{{ $jk }}">{{ ucfirst($jk) }}</option>
+            @endforeach
+        </select>
+
 
         <div class="row mb-3">
             <div class="col">

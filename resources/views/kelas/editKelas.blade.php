@@ -5,7 +5,7 @@
 @section('contents')
     <h1 class="mb-0">Edit Kelas</h1>
     <hr />
-    <form action="/kelas/{{$kels->id}}" method="POST">
+    <form action="/kelas/{{$kelas->id}}" method="POST">
         @csrf
         @method('PUT')
 

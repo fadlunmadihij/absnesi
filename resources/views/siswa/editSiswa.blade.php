@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <select name="jeniskelamin" value="{{$dataSiswa->jeniskelamin}}" class="form-control" required>
+        <select name="jenis_kelamin" value="{{$dataSiswa->jeniskelamin}}" class="form-control" required>
             {{-- <option  disabled selected></option> --}}
             @foreach($jeniskelamin as $jk)
                 <option value="{{ $jk }}">{{ ucfirst($jk) }}</option>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home Rekap')
+@section('title', 'Home Ranking')
 
 @section('contents')
     <div class="d-flex align-items-center justify-content-between">
