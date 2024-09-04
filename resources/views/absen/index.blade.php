@@ -16,7 +16,7 @@
     <table class="table table-hover">
         <thead class="table-primary">
             <tr>
-                <th>#</th>
+                <th>NO</th>
                 <th>SISWA</th>
                 <th>TANGGAL</th>
                 <th>ABSEN</th>

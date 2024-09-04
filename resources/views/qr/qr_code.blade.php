@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home Genaerate QR')
+@section('title', 'Home Generate QR')
 
 @section('contents')
 <div class="container">
