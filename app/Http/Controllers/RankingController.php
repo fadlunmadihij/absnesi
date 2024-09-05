@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\data_siswa;
 use App\Models\Kelas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RankingController extends Controller
@@ -13,15 +14,16 @@ class RankingController extends Controller
         "izin" => 0.10,
         "hadir" => 0.70,
         "alpa" => 0.15,
-        "sakit" => 0.5,
+        "sakit" => 0.05,
     ];
     public function index(Request $request)
     {
         $kelas = Kelas::all();
 
         if ($request->ajax()) {
-            $startDate = $request->start;
-            $endDate = $request->end;
+
+            $startDate = Carbon::parse($request->start)->startOfDay();
+            $endDate = Carbon::parse($request->end)->endOfDay();
             $kelasId = $request->kelas_id;
 
             $datas = data_siswa::when($kelasId, function ($query) use ($kelasId) {
@@ -65,6 +67,7 @@ class RankingController extends Controller
                 }
             ])->get();
 
+            // dd($datas->toSql(), $datas->getBindings());
             $normalisasi = $this->normalisasi($datas);
             $hasil_akhir2 = $normalisasi->sortByDesc('nilai_akhir')->values()->all();
             return response()->json($hasil_akhir2, 200);
@@ -89,9 +92,9 @@ class RankingController extends Controller
                 "sakit_count" => $data->sakit_count,
                 "nama" => $data->nama,
                 "jenis_kelamin" => $data->jenis_kelamin,
-                "nilai_sakit" => $this->count_sakit($data->sakit_count) / $max["sakit"],
-                "nilai_izin" => $this->count_izin($data->izin_count) / $max["izin"],
-                "nilai_alpa" => $this->count_alpa($data->alpa_count) / $max["alpa"],
+                "nilai_sakit" => $max["sakit"] / $this->count_sakit($data->sakit_count),
+                "nilai_izin" => $max["izin"] / $this->count_izin($data->izin_count),
+                "nilai_alpa" =>  $max["alpa"] / $this->count_alpa($data->alpa_count),
                 "nilai_hadir" => $this->count_hadir($data->hadir_count) / $max["hadir"]
             ];
             $temp += [
@@ -158,6 +161,7 @@ class RankingController extends Controller
             "sakit" => $this->count_sakit($data->min('sakit_count')),
             "hadir" => $this->count_hadir($data->max('hadir_count')),
         ];
+        // dd($max);
 
         return $max;
     }

@@ -6,9 +6,11 @@ use App\Models\Absensi;
 use App\Models\data_siswa;
 use App\Models\DataSiswa; // Sesuaikan nama model dengan file Anda
 use App\Models\Kelas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 // use Datatables;
 use Yajra\DataTables\DataTables as DataTables;
+use DB;
 
 class RekapController extends Controller
 {
@@ -21,8 +23,8 @@ class RekapController extends Controller
 
     public function filterRekap(Request $request)
     {
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
         $kelasId = $request->input('kelas_id');
 
         // Ambil absensi berdasarkan rentang tanggal dan kelas yang dipilih
@@ -63,7 +65,6 @@ class RekapController extends Controller
 
     public function hitungRekap(Request $request)
     {
-
         if ($request->ajax()) {
             // dd($request->start);
             if ($request->start == "" || $request->end == "") {
@@ -73,8 +74,9 @@ class RekapController extends Controller
                     "detail_error" => ""
                 ], 200);
             } else {
-                $startDate = $request->start;
-                $endDate = $request->end;
+
+                $startDate = Carbon::parse($request->start)->startOfDay();
+                $endDate = Carbon::parse($request->end)->endOfDay();
                 $kelasId = $request->kelas_id;
 
                 $datas = data_siswa::when($kelasId, function ($query) use ($kelasId) {
@@ -122,5 +124,34 @@ class RekapController extends Controller
                     ->make(true);
             }
         }
+    }
+
+    public function detail_rekap()
+    {
+        $startDate = Carbon::create(2024, 8, 1);
+        $endDate = $startDate->copy()->endOfMonth();
+
+        $dates = [];
+        while ($startDate->lte($endDate)) {
+            $dates[] = $startDate->format('Y-m-d');
+            $startDate->addDay();
+        }
+
+        $query = DB::table('data_siswas')
+            ->leftJoin('absensis', 'data_siswas.id', '=', 'absensis.data_siswa_id')
+            ->select('data_siswas.nama', 'data_siswas.id');
+        // dd($query->get());
+        foreach ($dates as $date) {
+            $formattedDate = Carbon::parse($date)->translatedFormat('j F Y');
+            $query->addSelect(DB::raw(
+                "MAX(CASE WHEN DATE(absensis.tanggal) = '$date' THEN absensis.status ELSE '-' END) as '$formattedDate'"
+            ));
+        }
+
+        $rekapAbsensi = $query
+            ->groupBy('data_siswas.id')
+            ->orderBy('data_siswas.nama')
+            ->get();
+        dd($rekapAbsensi);
     }
 }

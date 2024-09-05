@@ -79,7 +79,7 @@ Route::middleware('auth')->group(function () {
 
     // ROUTER RANKING
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
-    Route::post('/ranking/filter', [RankingController::class, 'filterRekap'])->name('ranking.filterRekap');
+    Route::post('/ranking/filter', [RankingController::class, 'index'])->name('ranking.filterRekap');
 
     Route::get('/scan', [WelcomeController::class, 'scan'])->name('scan');
     Route::post('/validasi', [WelcomeController::class, 'validasi'])->name('validasi');
@@ -90,4 +90,6 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
+
+    Route::get('detail_rekap', [rekapController::class, 'detail_rekap']);
 });

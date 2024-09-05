@@ -33,27 +33,28 @@
 
 
     <!-- Tabel Rekap -->
-    <table class="table table-bordered" id="table-rangking">
-        <thead>
-            <tr>
-                <th>Nomor</th>
-                <th>Nama Siswa</th>
-                <th>Hadir (H)</th>
-                <th>NA (H)</th>
-                <th>Izin (I)</th>
-                <th>NA (I)</th>
-                <th>Sakit (S)</th>
-                <th>NA (S)</th>
-                <th>Alpa (A)</th>
-                <th>NA (A)</th>
-                <th>Hasil Akhir</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="table-responsive">
+        <table class="table table-bordered table-responsive" id="table-rangking">
+            <thead>
+                <tr>
+                    <th>Nomor</th>
+                    <th>Nama Siswa</th>
+                    <th>Hadir (H)</th>
+                    <th>NA (H)</th>
+                    <th>Izin (I)</th>
+                    <th>NA (I)</th>
+                    <th>Sakit (S)</th>
+                    <th>NA (S)</th>
+                    <th>Alpa (A)</th>
+                    <th>NA (A)</th>
+                    <th>Hasil Akhir</th>
+                </tr>
+            </thead>
+            <tbody>
 
-        </tbody>
-    </table>
-
+            </tbody>
+        </table>
+    </div>
     <p class="text-center">Pilih rentang tanggal dan kelas untuk melihat rekap absensi.</p>
 
 @endsection
@@ -72,12 +73,13 @@
         });
 
         function prosesData() {
-
-            $.get("{{ route('ranking') }}",
+            $.post("{{ route('ranking.filterRekap') }}", {
+                    "start": $("#start_date").val(),
+                    "end": $("#end_date").val(),
+                    "kelas_id": $('#kelas').find(":selected").val()
+                },
                 function(data) {
-                    // console.log(data);
                     $('#table-rangking tbody').empty();
-
                     $.each(data, function(index, item) {
                         var row = '<tr>' +
                             '<td>' + item.NISN + '</td>' +
