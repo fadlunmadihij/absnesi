@@ -53,6 +53,37 @@
         <span>Rekap</span></a>
     </li>
 
+    <li class="nav-item dropdown {{ Request::is('kriteria*') || Request::is('indikator*') || Request::is('example*') || Request::is('tahap1') || Request::is('tahap2*') || Request::is('normalisasi*') || Request::is('exRanking*') ? 'active' : '' }}">
+        <a class="nav-link dropdown-toggle" href="#" id="perhitunganDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-calculator"></i>
+            <span>Perhitungan</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="perhitunganDropdown">
+            <a class="dropdown-item {{ Request::is('indikator') ? 'active' : '' }}" href="/indikator">
+                <i class="fas fa-fw fa-file-alt"></i> Indikator
+            </a>
+            <a class="dropdown-item {{ Request::is('kriteria') ? 'active' : '' }}" href="/kriteria">
+                <i class="fas fa-fw fa-file-alt"></i> Kriteria
+            </a>
+            <a class="dropdown-item {{ Request::is('example') ? 'active' : '' }}" href="/example">
+                <i class="fas fa-fw fa-file-alt"></i> Example Data Siswa
+            </a>
+            <a class="dropdown-item {{ Request::is('tahap1') ? 'active' : '' }}" href="/tahap1">
+                <i class="fas fa-fw fa-file-alt"></i> Tahap Analisi 1
+            </a>
+            <a class="dropdown-item {{ Request::is('tahap2') ? 'active' : '' }}" href="/tahap2">
+                <i class="fas fa-fw fa-file-alt"></i> Tahap Analisi 2
+            </a>
+            <a class="dropdown-item {{ Request::is('normalisasi') ? 'active' : '' }}" href="/normalisasi">
+                <i class="fas fa-fw fa-file-alt"></i> Matrik Ternormalisasi
+            </a>
+            <a class="dropdown-item {{ Request::is('exRanking') ? 'active' : '' }}" href="/exRanking">
+                <i class="fas fa-fw fa-file-alt"></i> Hasil Perankingan
+            </a>
+        </div>
+    </li>
+
+
     <li class="nav-item {{ Request::is('ranking') ? 'active' : '' }}">
       <a class="nav-link" href="/ranking">
         <i class="fas fa-fw fa-sort-numeric-up"></i>

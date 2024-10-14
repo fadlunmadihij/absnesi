@@ -2,11 +2,19 @@
 
 use App\Http\Controllers\absenController;
 use App\Http\Controllers\dataSiswaController;
+use App\Http\Controllers\exampleController;
+use App\Http\Controllers\exRankingController;
+use App\Http\Controllers\idikatorController;
+use App\Http\Controllers\indikatorController;
 use App\Http\Controllers\kelasController;
 use App\Http\Controllers\keteranganController;
+use App\Http\Controllers\KriteriaController;
+use App\Http\Controllers\normalisasiController;
 use App\Http\Controllers\QRController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\rekapController;
+use App\Http\Controllers\tahap1Controller;
+use App\Http\Controllers\tahap2Controller;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Foundation\Auth\User;
@@ -64,6 +72,17 @@ Route::middleware('auth')->group(function () {
     Route::get('kelas/{kelas}', [kelasController::class, 'edit']);
     Route::put('kelas/{kelas}', [kelasController::class, 'update']);
     Route::delete('kelas/{kelas}', [kelasController::class, 'destroy']);
+
+
+    //perhitungan
+    Route::get('kriteria', [KriteriaController::class, 'index']);
+    Route::get('indikator', [indikatorController::class, 'index']);
+    Route::get('example', [exampleController::class, 'index']);
+    Route::get('tahap1', [tahap1Controller::class, 'index']);
+    Route::get('tahap2', [tahap2Controller::class, 'index']);
+    Route::get('normalisasi', [normalisasiController::class, 'index']);
+    Route::get('exRanking', [exRankingController::class, 'index']);
+
 
     // ROUTER KETERANGAN
     Route::get('keterangan', [keteranganController::class, 'index']);
