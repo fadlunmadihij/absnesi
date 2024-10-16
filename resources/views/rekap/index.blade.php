@@ -70,15 +70,13 @@
                     url: "{{ route('hitungRekap.filter') }}",
                     type: "POST",
                     data: function(d) {
-                        d.start = $("#start_date").val();
-                        d.end = $("#end_date").val();
+                        d.start_date = $("#start_date").val();
+                        d.end_date = $("#end_date").val();
                         d.kelas_id = $('#kelas').find(":selected").val();
                     }
                 },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
-                    },
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                     {
                         data: 'nama',
                         name: 'nama'

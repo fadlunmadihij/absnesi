@@ -13,7 +13,7 @@
             {{ Session::get('success') }}
         </div>
     @endif
-    <table class="table table-hover">
+    <table class="table table-hover" id="table">
         <thead class="table-primary">
             <tr>
                 <th>NO</th>
@@ -57,4 +57,13 @@
             @endif
         </tbody>
     </table>
+@endsection
+
+@section('js')
+<script>
+
+$(document).ready(function () {
+    $('#table').DataTable();
+  });
+ </script>
 @endsection

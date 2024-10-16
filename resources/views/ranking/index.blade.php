@@ -60,45 +60,58 @@
 @endsection
 
 @section('js')
-    <script>
-        var table;
-        $(document).ready(function() {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-
+<script>
+    var table;
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
         });
 
-        function prosesData() {
-            $.post("{{ route('ranking.filterRekap') }}", {
-                    "start": $("#start_date").val(),
-                    "end": $("#end_date").val(),
-                    "kelas_id": $('#kelas').find(":selected").val()
-                },
-                function(data) {
-                    $('#table-rangking tbody').empty();
-                    $.each(data, function(index, item) {
-                        var row = '<tr>' +
-                            '<td>' + item.NISN + '</td>' +
-                            '<td>' + item.nama + '</td>' +
-                            '<td>' + item.hadir_count + '</td>' +
-                            '<td>' + item.nilai_hadir + '</td>' +
-                            '<td>' + item.izin_count + '</td>' +
-                            '<td>' + item.nilai_izin + '</td>' +
-                            '<td>' + item.sakit_count + '</td>' +
-                            '<td>' + item.nilai_sakit + '</td>' +
-                            '<td>' + item.alpa_count + '</td>' +
-                            '<td>' + item.nilai_alpa + '</td>' +
-                            '<td>' + item.nilai_akhir + '</td>' +
-                            '</tr>';
-                        $('#table-rangking tbody').append(row);
-                    });
-                },
-                "json"
-            );
-        }
-    </script>
+        // Inisialisasi DataTable
+        table = $('#table-rangking').DataTable();
+
+    });
+
+    function prosesData() {
+        $.post("{{ route('ranking.filterRekap') }}", {
+                "start": $("#start_date").val(),
+                "end": $("#end_date").val(),
+                "kelas_id": $('#kelas').find(":selected").val()
+            },
+            function(data) {
+                $('#table-rangking tbody').empty();
+                $.each(data, function(index, item) {
+                    var row = '<tr>' +
+                        '<td>' + item.NISN + '</td>' +
+                        '<td>' + item.nama + '</td>' +
+                        '<td>' + item.hadir_count + '</td>' +
+                        '<td>' + item.nilai_hadir + '</td>' +
+                        '<td>' + item.izin_count + '</td>' +
+                        '<td>' + item.nilai_izin + '</td>' +
+                        '<td>' + item.sakit_count + '</td>' +
+                        '<td>' + item.nilai_sakit + '</td>' +
+                        '<td>' + item.alpa_count + '</td>' +
+                        '<td>' + item.nilai_alpa + '</td>' +
+                        '<td>' + item.nilai_akhir + '</td>' +
+                        '</tr>';
+                    $('#table-rangking tbody').append(row);
+                });
+
+                // Menghitung ulang DataTable setelah menambahkan data
+                table.clear().rows.add($('#table-rangking tbody').find('tr')).draw();
+            },
+            "json"
+        );
+    }
+</script>
+
 @endsection
+
+{{-- @section('js')
+<script>
+
+
+ </script>
+@endsection --}}

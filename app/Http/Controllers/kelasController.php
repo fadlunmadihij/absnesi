@@ -6,13 +6,21 @@ use App\Models\kelas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
+use Yajra\DataTables\DataTables as DataTables;
+
 use function Laravel\Prompts\table;
 
 class kelasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $kelas = kelas::latest()->get();
+        // if ($request->ajax()) {
+
+        //     return DataTables::of($kelas)
+        //     ->addIndexColumn()
+        //     ->make(true);
+        // }
         return view('kelas.index', compact('kelas'));
     }
 

@@ -66,8 +66,8 @@ class RekapController extends Controller
     public function hitungRekap(Request $request)
     {
         if ($request->ajax()) {
-            // dd($request->start);
-            if ($request->start == "" || $request->end == "") {
+            // dd($request->all());
+            if ($request->start_date == "" || $request->end_date == "") {
                 return response()->json([
                     "res" => "fail",
                     "message" => "Pilih Tanggal Untuk Ditampilkan Dengan Benar",
@@ -75,11 +75,11 @@ class RekapController extends Controller
                 ], 200);
             } else {
 
-                $startDate = Carbon::parse($request->start)->startOfDay();
-                $endDate = Carbon::parse($request->end)->endOfDay();
+                $startDate = Carbon::parse($request->start_date)->startOfDay();
+                $endDate = Carbon::parse($request->end_date)->endOfDay();
                 $kelasId = $request->kelas_id;
 
-                $datas = data_siswa::when($kelasId, function ($query) use ($kelasId) {
+                $data = data_siswa::when($kelasId, function ($query) use ($kelasId) {
                     return $query->where('kelas_id', $kelasId);
                 })->withCount([
                     'absen as hadir_count' => function ($query) use ($startDate, $endDate) {
@@ -119,9 +119,10 @@ class RekapController extends Controller
                             });
                     }
                 ])->get();
-                return DataTables::of($datas)
-                    ->addIndexColumn()
-                    ->make(true);
+
+                    return DataTables::of($data)
+                        ->addIndexColumn()
+                        ->make(true);
             }
         }
     }
