@@ -35,6 +35,22 @@
       background-position: center;
       background-size: cover;
     }
+    #togglePassword{
+            background-color: transparent;
+            cursor: pointer;
+            border: none;
+            position: absolute;
+            margin-left: 13rem;
+            margin-top: -2.5rem;
+        }
+    #togglePassword1{
+            background-color: transparent;
+            cursor: pointer;
+            border: none;
+            position: absolute;
+            margin-left: 13rem;
+            margin-top: -2.5rem;
+        }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen background-image">
@@ -65,13 +81,33 @@
                 </div>
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
-                    <input name="password" type="password" class="form-control form-control-user @error('password')is-invalid @enderror" id="exampleInputPassword" placeholder="Password">
+                    <input name="password" type="password" class="form-control form-control-user @error('password')is-invalid @enderror" id="passreg" placeholder="Password">
+                    <button type="button" id="togglePassword">
+                        <!-- Eye Icon (Default: Hidden) -->
+                        <span id="eyeIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                        </span>
+                        <!-- Eye Off Icon (Password Visible) -->
+                        <span id="eyeOffIcon" style="display: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+                        </span>
+                    </button>
                     @error('password')
                       <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                   </div>
                   <div class="col-sm-6">
-                    <input name="password_confirmation" type="password" class="form-control form-control-user @error('password_confirmation')is-invalid @enderror" id="exampleRepeatPassword" placeholder="Repeat Password">
+                    <input name="password_confirmation" type="password" class="form-control form-control-user @error('password_confirmation')is-invalid @enderror" id="repassreg" placeholder="Repeat Password">
+                    <button type="button" id="togglePassword1">
+                        <!-- Eye Icon (Default: Hidden) -->
+                        <span id="eyeIcon1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                        </span>
+                        <!-- Eye Off Icon (Password Visible) -->
+                        <span id="eyeOffIcon1" style="display: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+                        </span>
+                    </button>
                     @error('password_confirmation')
                       <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -98,5 +134,39 @@
 
   <!-- Custom scripts for all pages-->
   <script src="{{ asset('admin_assets/js/sb-admin-2.min.js') }}"></script>
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordField = document.getElementById('passreg');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const eyeOffIcon = document.getElementById('eyeOffIcon');
+
+            // Toggle between 'password' and 'text' input types
+            if (passwordField.getAttribute('type') === 'password') {
+                passwordField.setAttribute('type', 'text');
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'inline'; // Show eye-off (visible)
+            } else {
+                passwordField.setAttribute('type', 'password');
+                eyeIcon.style.display = 'inline'; // Show eye (hidden)
+                eyeOffIcon.style.display = 'none';
+            }
+    });
+    document.getElementById('togglePassword1').addEventListener('click', function () {
+        const passwordField = document.getElementById('repassreg');
+            const eyeIcon = document.getElementById('eyeIcon1');
+            const eyeOffIcon = document.getElementById('eyeOffIcon1');
+
+            // Toggle between 'password' and 'text' input types
+            if (passwordField.getAttribute('type') === 'password') {
+                passwordField.setAttribute('type', 'text');
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'inline'; // Show eye-off (visible)
+            } else {
+                passwordField.setAttribute('type', 'password');
+                eyeIcon.style.display = 'inline'; // Show eye (hidden)
+                eyeOffIcon.style.display = 'none';
+            }
+    });
+</script>
 </body>
 </html>
