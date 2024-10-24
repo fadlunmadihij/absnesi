@@ -12,7 +12,7 @@ use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\normalisasiController;
 use App\Http\Controllers\QRController;
 use App\Http\Controllers\RankingController;
-use App\Http\Controllers\rekapController;
+use App\Http\Controllers\RekapController;
 use App\Http\Controllers\tahap1Controller;
 use App\Http\Controllers\tahap2Controller;
 use App\Http\Controllers\UserController;
@@ -95,7 +95,7 @@ Route::middleware('auth')->group(function () {
     // ROUTER REKAP
     Route::get('rekap', [RekapController::class, 'index']);
     Route::post('/rekap/filter', [RekapController::class, 'hitungRekap'])->name('hitungRekap.filter');
-    Route::get('rekap/view/pdf', [rekapController::class, 'viewPDF']);
+    Route::get('rekap/view/pdf', [RekapController::class, 'viewPDF']);
 
     // ROUTER RANKING
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
@@ -111,5 +111,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
 
-    Route::get('detail_rekap', [rekapController::class, 'detail_rekap']);
+    Route::get('detail_rekap', [RekapController::class, 'detail_rekap']);
 });
