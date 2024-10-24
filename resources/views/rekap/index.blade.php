@@ -3,60 +3,112 @@
 @section('title', 'Home Rekap')
 
 @section('contents')
-    <div class="d-flex align-items-center justify-content-between">
-        <h1 class="mb-0">List Rekap</h1>
+<div class="d-flex align-items-center justify-content-between">
+    <h1 class="mb-0">List Rekap</h1>
+</div>
+
+<!-- Form untuk memilih rentang tanggal dan kelas -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label for="start_date" class="form-label">Tanggal Mulai</label>
+        <input type="date" name="start_date" id="start_date" class="form-control" required>
     </div>
-
-    <!-- Form untuk memilih rentang tanggal dan kelas -->
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="start_date" class="form-label">Tanggal Mulai</label>
-            <input type="date" name="start_date" id="start_date" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label for="end_date" class="form-label">Tanggal Selesai</label>
-            <input type="date" name="end_date" id="end_date" class="form-control" required>
-        </div>
-        <div class="col-md-4">
-            <label for="kelas" class="form-label">Kelas</label>
-            <select name="kelas_id" id="kelas" class="form-control" required>
-                <option value="">Pilih Kelas</option>
-                @foreach ($kelas as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-12 d-flex align-items-end mt-3">
-            <button type="submit" class="btn btn-primary" onclick="prosesData()">Rekap</button>
-            <a href="rekap/view/pdf">view PDF</a>
-        </div>
+    <div class="col-md-4">
+        <label for="end_date" class="form-label">Tanggal Selesai</label>
+        <input type="date" name="end_date" id="end_date" class="form-control" required>
     </div>
+    <div class="col-md-4">
+        <label for="kelas" class="form-label">Kelas</label>
+        <select name="kelas_id" id="kelas" class="form-control" required>
+            <option value="">Pilih Kelas</option>
+            @foreach ($kelas as $k)
+            <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-12 d-flex align-items-end mt-3">
+        <button type="submit" class="btn btn-primary" onclick="prosesData()">Rekap</button>
+        <button type="submit" class="btn btn-primary" onclick="viewPdf()">View PDF</button>
+    </div>
+</div>
+
+<table>
+    <tr>
+        <td>Halo</td>
+        <td>Halo</td>
+    </tr>
+</table>
 
 
-    <!-- Tabel Rekap -->
-    <table class="table table-bordered" id="tableLaporan">
-        <thead>
-            <tr>
-                <th>Nomor</th>
-                <th>Nama Siswa</th>
-                <th>Hadir (H)</th>
-                <th>Izin (I)</th>
-                <th>Sakit (S)</th>
-                <th>Alpa (A)</th>
-            </tr>
-        </thead>
-        <tbody>
+<!-- Tabel Rekap -->
+<table class="table table-bordered" id="tableLaporan">
+    <thead>
+        <tr>
+            <th>Nomor</th>
+            <th>Nama Siswa</th>
+            <th>Hadir (H)</th>
+            <th>Izin (I)</th>
+            <th>Sakit (S)</th>
+            <th>Alpa (A)</th>
+        </tr>
+    </thead>
+    <tbody>
 
-        </tbody>
-    </table>
+    </tbody>
+</table>
 
-    <p class="text-center">Pilih rentang tanggal dan kelas untuk melihat rekap absensi.</p>
+<p class="text-center">Pilih rentang tanggal dan kelas untuk melihat rekap absensi.</p>
 
 @endsection
 
 @section('js')
-    <script>
-        var table;
+<script>
+    const viewPdf = () => {
+    let startDate = document.getElementById('start_date').value;
+    let endDate = document.getElementById('end_date').value;
+    let kelasId = document.getElementById('kelas').value;
+
+    console.log(`start_date: ${startDate}, end_date: ${endDate}, kelas: ${kelasId}`);
+
+    // Buat form secara dinamis
+    let form = $('<form>', {
+        action: '/rekap/view/pdf',
+        method: 'POST',
+        target: '_blank' // agar membuka file PDF di tab baru
+    });
+
+    // Tambahkan CSRF token jika diperlukan
+    form.append($('<input>', {
+        type: 'hidden',
+        name: '_token',
+        value: $('meta[name="csrf-token"]').attr('content') // pastikan CSRF token sudah di-load
+    }));
+
+    // Tambahkan input data startDate, endDate, dan kelasId ke form
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'startDate',
+        value: startDate
+    }));
+
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'endDate',
+        value: endDate
+    }));
+
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'kelasId',
+        value: kelasId
+    }));
+
+    // Append form ke body dan submit
+    $('body').append(form);
+    form.submit();
+};
+
+    var table;
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -106,5 +158,5 @@
         function prosesData() {
             tabel.api().ajax.reload();
         }
-    </script>
+</script>
 @endsection

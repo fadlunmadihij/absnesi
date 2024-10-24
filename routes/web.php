@@ -95,7 +95,7 @@ Route::middleware('auth')->group(function () {
     // ROUTER REKAP
     Route::get('rekap', [RekapController::class, 'index']);
     Route::post('/rekap/filter', [RekapController::class, 'hitungRekap'])->name('hitungRekap.filter');
-    Route::get('rekap/view/pdf', [RekapController::class, 'viewPDF']);
+    Route::post('rekap/view/pdf', [RekapController::class, 'viewPDF']);
 
     // ROUTER RANKING
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
