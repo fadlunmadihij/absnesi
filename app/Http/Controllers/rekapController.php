@@ -154,7 +154,7 @@ class RekapController extends Controller
         $fileName = "Rekap Absensi Kelas $kelasName Per $startDate - $endDate";
 
         // Menampilkan file PDF di browser
-        return $mpdf->Output($fileName, 'D');  // 'I' untuk menampilkan PDF di browser
+        return $mpdf->Output($fileName.'.pdf', 'D');  // 'I' untuk menampilkan PDF di browser
     }
 
 
