@@ -13,6 +13,7 @@
         .kop-surat {
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
         }
 
         .kop-surat h2 {
