@@ -63,7 +63,7 @@
         <table border="0" style="width: 100%; border: 0;">
             <tr>
                 <td style="width: 10%;">
-                    <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png" alt="Logo Sekolah">
+                    <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png" width="10%" alt="Logo Sekolah">
                 </td>
                 <td style="text-align: center;">
                     <h2>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h2>
