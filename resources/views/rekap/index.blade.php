@@ -28,6 +28,7 @@
         </div>
         <div class="col-md-12 d-flex align-items-end mt-3">
             <button type="submit" class="btn btn-primary" onclick="prosesData()">Rekap</button>
+            <a href="rekap/view/pdf">view PDF</a>
         </div>
     </div>
 

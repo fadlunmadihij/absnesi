@@ -21,6 +21,27 @@ class RekapController extends Controller
         return view('rekap.index', compact('kelas'));
     }
 
+    public function viewPDF()
+{
+    // Ambil data kelas atau data lain yang diperlukan
+    $kelas = Kelas::all();
+    // dd($kelas);
+
+    // Render view Blade dan kirimkan data ke view tersebut
+    $html = view('rekap.templatepdf', compact('kelas'))->render();
+
+    // Inisialisasi mPDF
+    $mpdf = new \Mpdf\Mpdf();
+
+    // Masukkan HTML yang dirender ke dalam PDF
+    $mpdf->WriteHTML($html);
+
+    // Menampilkan file PDF di browser (bukan untuk didownload)
+    return $mpdf->Output('rekap-kehadiran.pdf', 'I');  // 'I' untuk menampilkan PDF di browser
+}
+
+
+
     public function filterRekap(Request $request)
     {
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
