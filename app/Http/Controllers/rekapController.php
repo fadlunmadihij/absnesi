@@ -24,14 +24,61 @@ class RekapController extends Controller
 
     public function viewPDF(Request $request)
     {
+        // Ambil tanggal dari request
+        $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
+        $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
+        $kelasId = $request->input('kelasId');
 
-        dd($request->all());
-        // Ambil data kelas atau data lain yang diperlukan
-        $kelas = Kelas::all();
-        // dd($kelas);
+        // Filter data absensi berdasarkan rentang tanggal
+        $query = Absensi::with(['namaKelas', 'dataSiswa'])
+            ->whereBetween('tanggal', [$startDate, $endDate]);
+
+        // Jika kelasId ada, filter berdasarkan relasi ke kelas
+        if ($kelasId) {
+            $query->whereHas('dataSiswa', function($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            });
+        }
+
+        $absensi = $query->get();
+
+        // Rekap data absensi berdasarkan kelas dan siswa
+        $rekap = [];
+        $kelasName = '';
+
+        foreach ($absensi as $ab) {
+            // Ambil nama kelas dari relasi
+            if ($ab->namaKelas) {
+                $kelasName = $ab->namaKelas->nama_kelas; // Set kelasName
+            }
+
+            $data_siswa = $ab->dataSiswa ? $ab->dataSiswa->nama : 'Unknown Siswa'; // Ambil nama siswa dari relasi
+
+            if (!isset($rekap[$data_siswa])) {
+                $rekap[$data_siswa] = [
+                    'nama' => $data_siswa,
+                    'status' => ['H' => 0, 'I' => 0, 'S' => 0, 'A' => 0]
+                ];
+            }
+
+            // Increment status count
+            $rekap[$data_siswa]['status'][$ab->status]++;
+        }
+
+        // Mengonversi rekap menjadi array yang dapat digunakan untuk tampilan
+        $dataSiswa = [];
+        foreach ($rekap as $siswa) {
+            $dataSiswa[] = (object) [
+                'nama' => $siswa['nama'],
+                'hadir_count' => $siswa['status']['H'],
+                'izin_count' => $siswa['status']['I'],
+                'sakit_count' => $siswa['status']['S'],
+                'alpa_count' => $siswa['status']['A'],
+            ];
+        }
 
         // Render view Blade dan kirimkan data ke view tersebut
-        $html = view('rekap.templatepdf', compact('kelas'))->render();
+        $html = view('rekap.templatepdf', compact('dataSiswa', 'kelasName', 'startDate', 'endDate'))->render();
 
         // Inisialisasi mPDF
         $mpdf = new \Mpdf\Mpdf();
@@ -39,9 +86,10 @@ class RekapController extends Controller
         // Masukkan HTML yang dirender ke dalam PDF
         $mpdf->WriteHTML($html);
 
-        // Menampilkan file PDF di browser (bukan untuk didownload)
+        // Menampilkan file PDF di browser
         return $mpdf->Output('rekap-kehadiran.pdf', 'I');  // 'I' untuk menampilkan PDF di browser
     }
+
 
 
 

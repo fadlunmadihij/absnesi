@@ -32,14 +32,6 @@
     </div>
 </div>
 
-<table>
-    <tr>
-        <td>Halo</td>
-        <td>Halo</td>
-    </tr>
-</table>
-
-
 <!-- Tabel Rekap -->
 <table class="table table-bordered" id="tableLaporan">
     <thead>
@@ -63,7 +55,7 @@
 
 @section('js')
 <script>
-    const viewPdf = () => {
+   const viewPdf = () => {
     let startDate = document.getElementById('start_date').value;
     let endDate = document.getElementById('end_date').value;
     let kelasId = document.getElementById('kelas').value;
@@ -74,17 +66,17 @@
     let form = $('<form>', {
         action: '/rekap/view/pdf',
         method: 'POST',
-        target: '_blank' // agar membuka file PDF di tab baru
+        target: '_blank' // membuka file PDF di tab baru
     });
 
-    // Tambahkan CSRF token jika diperlukan
+    // Tambahkan CSRF token
     form.append($('<input>', {
         type: 'hidden',
         name: '_token',
-        value: $('meta[name="csrf-token"]').attr('content') // pastikan CSRF token sudah di-load
+        value: $('meta[name="csrf-token"]').attr('content')
     }));
 
-    // Tambahkan input data startDate, endDate, dan kelasId ke form
+    // Tambahkan input data startDate, endDate, dan kelasId
     form.append($('<input>', {
         type: 'hidden',
         name: 'startDate',
@@ -103,9 +95,8 @@
         value: kelasId
     }));
 
-    // Append form ke body dan submit
-    $('body').append(form);
-    form.submit();
+    // Tambahkan form ke body dan submit
+    form.appendTo('body').submit();
 };
 
     var table;

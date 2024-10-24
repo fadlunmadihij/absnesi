@@ -13,16 +13,20 @@
         .kop-surat {
             text-align: center;
             margin-bottom: 20px;
-            display: flex;
         }
 
-        .kop-surat h2 {
-            margin: 0;
+        .kop-surat img {
+            height: 80px;
         }
 
+        .kop-surat h2,
         .kop-surat h3 {
             margin: 0;
-            font-size: 18px;
+        }
+
+        .kop-surat p {
+            margin-top: 5px;
+            font-size: 12px;
         }
 
         table {
@@ -35,62 +39,79 @@
         td {
             padding: 8px;
             text-align: center;
+            border: 1px solid black;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid black;
+        }
+
+        .ttd {
+            margin-top: 40px;
+            text-align: right;
+        }
+
+        .ttd p {
+            margin: 5px 0;
         }
     </style>
 </head>
 
 <body>
+    <div class="kop-surat">
+        <table border="0" style="width: 100%; border: 0;">
+            <tr>
+                <td style="width: 10%;">
+                    <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png" alt="Logo Sekolah">
+                </td>
+                <td style="text-align: center;">
+                    <h2>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h2>
+                    <h3>DINAS PENDIDIKAN</h3>
+                    <h3>SEKOLAH MENENGAH ATAS NEGERI 3 SUMENEP</h3>
+                    <p>Jalan Cendana No. 9A, Sumenep 20155<br>Tel/Fax: 061 8246940, e-mail: sma3_sumenep@gmail.com</p>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-    {{-- <div class="kop-surat">
-        <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png"
-            alt="Logo Sekolah" style="height: 80px;">
-
-        <hr>
-    </div> --}}
-    <table border="0" style="border: 0 !important; outline: 0 !important;">
-        <tr>
-            <td><img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png"
-                    alt="Logo Sekolah" style="height: 80px;"></td>
-            <td>
-                <h2>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h2>
-                <h3>DINAS PENDIDIKAN</h3>
-                <h3>SEKOLAH MENENGAH ATAS NEGERI 3 SUMENEP</h3>
-                <p>Jalan Cendana No. 9A, Sumenep 20155<br>Tel/Fax: 061 8246940, e-mail: sma3_sumenep@gmail.com</p>
-
-            </td>
-
-        </tr>
-    </table>
     <hr>
-    <hr style="margin-top: -0.7rem ">
-
-    <p align="center"><b>Data Siswa</b></p>
+    <p align="center"><b>Data Siswa Rekap Absensi</b></p>
+    <p align="center"><b>Kelas: {{ $kelasName }}</b></p>
+    <p align="center"><b>Tanggal: {{ $startDate }} s/d {{ $endDate }}</b></p>
 
     <!-- Tabel Kehadiran -->
-    <table border="1">
+    <table>
         <thead>
             <tr>
-                <th>kelas</th>
+                <th>Nomor</th>
+                <th>Nama Siswa</th>
+                <th>Hadir (H)</th>
+                <th>Izin (I)</th>
+                <th>Sakit (S)</th>
+                <th>Alpa (A)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($kelas as $kls)
+            @foreach ($dataSiswa as $index => $siswa)
             <tr>
-                <td>{{ $kls['nama_kelas'] }}</td>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $siswa->nama }}</td>
+                <td>{{ $siswa->hadir_count }}</td>
+                <td>{{ $siswa->izin_count }}</td>
+                <td>{{ $siswa->sakit_count }}</td>
+                <td>{{ $siswa->alpa_count }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    <br><br>
-
-    <p>Demikian surat pemberitahuan ini kami sampaikan. Atas perhatian Bapak/Ibu, kami ucapkan terima kasih.</p>
-
-    <p>Wassalamu'alaikum Wr. Wb.</p>
-
-    <p>Sumenep, 25 Juni 2024<br>Kepala Sekolah SMAN 3 Sumenep</p>
-    <p><b>Dra. Hj. Yuliana, Spd.</b><br>NIP. 13096342</p>
-
+    <div class="ttd">
+        <p>Sumenep, {{ now()->format('d F Y') }}</p>
+        <p><b>Kepala Sekolah SMAN 3 Sumenep</b></p>
+        <p><b>Dra. Hj. Yuliana, Spd.</b></p>
+        <p>NIP. 13096342</p>
+    </div>
 </body>
 
 </html>
