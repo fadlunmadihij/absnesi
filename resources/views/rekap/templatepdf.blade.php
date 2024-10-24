@@ -47,7 +47,7 @@
 <body>
 
     <div class="kop-surat">
-        {{-- <img src="{{ asset('') }}/admin_assets/img/smaga-logo.svg" alt="Logo Sekolah" style="height: 80px;"> --}}
+        <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png" alt="Logo Sekolah" style="height: 80px;">
         <h2>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h2>
         <h3>DINAS PENDIDIKAN</h3>
         <h3>SEKOLAH MENENGAH ATAS NEGERI 3 SUMENEP</h3>
