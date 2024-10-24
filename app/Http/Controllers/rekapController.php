@@ -21,24 +21,27 @@ class RekapController extends Controller
         return view('rekap.index', compact('kelas'));
     }
 
-    public function viewPDF()
-{
-    // Ambil data kelas atau data lain yang diperlukan
-    $kelas = Kelas::all();
-    // dd($kelas);
 
-    // Render view Blade dan kirimkan data ke view tersebut
-    $html = view('rekap.templatepdf', compact('kelas'))->render();
+    public function viewPDF(Request $request)
+    {
 
-    // Inisialisasi mPDF
-    $mpdf = new \Mpdf\Mpdf();
+        dd($request->all());
+        // Ambil data kelas atau data lain yang diperlukan
+        $kelas = Kelas::all();
+        // dd($kelas);
 
-    // Masukkan HTML yang dirender ke dalam PDF
-    $mpdf->WriteHTML($html);
+        // Render view Blade dan kirimkan data ke view tersebut
+        $html = view('rekap.templatepdf', compact('kelas'))->render();
 
-    // Menampilkan file PDF di browser (bukan untuk didownload)
-    return $mpdf->Output('rekap-kehadiran.pdf', 'I');  // 'I' untuk menampilkan PDF di browser
-}
+        // Inisialisasi mPDF
+        $mpdf = new \Mpdf\Mpdf();
+
+        // Masukkan HTML yang dirender ke dalam PDF
+        $mpdf->WriteHTML($html);
+
+        // Menampilkan file PDF di browser (bukan untuk didownload)
+        return $mpdf->Output('rekap-kehadiran.pdf', 'I');  // 'I' untuk menampilkan PDF di browser
+    }
 
 
 
@@ -103,47 +106,47 @@ class RekapController extends Controller
                 $data = data_siswa::when($kelasId, function ($query) use ($kelasId) {
                     return $query->where('kelas_id', $kelasId);
                 })->withCount([
-                    'absen as hadir_count' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status', 'H')
-                            ->when($startDate, function ($query) use ($startDate) {
-                                $query->where('tanggal', '>=', $startDate);
-                            })
-                            ->when($endDate, function ($query) use ($endDate) {
-                                $query->where('tanggal', '<=', $endDate);
-                            });
-                    },
-                    'absen as izin_count' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status', 'I')
-                            ->when($startDate, function ($query) use ($startDate) {
-                                $query->where('tanggal', '>=', $startDate);
-                            })
-                            ->when($endDate, function ($query) use ($endDate) {
-                                $query->where('tanggal', '<=', $endDate);
-                            });
-                    },
-                    'absen as sakit_count' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status', 'S')
-                            ->when($startDate, function ($query) use ($startDate) {
-                                $query->where('tanggal', '>=', $startDate);
-                            })
-                            ->when($endDate, function ($query) use ($endDate) {
-                                $query->where('tanggal', '<=', $endDate);
-                            });
-                    },
-                    'absen as alpa_count' => function ($query) use ($startDate, $endDate) {
-                        $query->where('status', 'A')
-                            ->when($startDate, function ($query) use ($startDate) {
-                                $query->where('tanggal', '>=', $startDate);
-                            })
-                            ->when($endDate, function ($query) use ($endDate) {
-                                $query->where('tanggal', '<=', $endDate);
-                            });
-                    }
-                ])->get();
+                            'absen as hadir_count' => function ($query) use ($startDate, $endDate) {
+                                $query->where('status', 'H')
+                                    ->when($startDate, function ($query) use ($startDate) {
+                                        $query->where('tanggal', '>=', $startDate);
+                                    })
+                                    ->when($endDate, function ($query) use ($endDate) {
+                                        $query->where('tanggal', '<=', $endDate);
+                                    });
+                            },
+                            'absen as izin_count' => function ($query) use ($startDate, $endDate) {
+                                $query->where('status', 'I')
+                                    ->when($startDate, function ($query) use ($startDate) {
+                                        $query->where('tanggal', '>=', $startDate);
+                                    })
+                                    ->when($endDate, function ($query) use ($endDate) {
+                                        $query->where('tanggal', '<=', $endDate);
+                                    });
+                            },
+                            'absen as sakit_count' => function ($query) use ($startDate, $endDate) {
+                                $query->where('status', 'S')
+                                    ->when($startDate, function ($query) use ($startDate) {
+                                        $query->where('tanggal', '>=', $startDate);
+                                    })
+                                    ->when($endDate, function ($query) use ($endDate) {
+                                        $query->where('tanggal', '<=', $endDate);
+                                    });
+                            },
+                            'absen as alpa_count' => function ($query) use ($startDate, $endDate) {
+                                $query->where('status', 'A')
+                                    ->when($startDate, function ($query) use ($startDate) {
+                                        $query->where('tanggal', '>=', $startDate);
+                                    })
+                                    ->when($endDate, function ($query) use ($endDate) {
+                                        $query->where('tanggal', '<=', $endDate);
+                                    });
+                            }
+                        ])->get();
 
-                    return DataTables::of($data)
-                        ->addIndexColumn()
-                        ->make(true);
+                return DataTables::of($data)
+                    ->addIndexColumn()
+                    ->make(true);
             }
         }
     }

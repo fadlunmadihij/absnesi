@@ -31,12 +31,6 @@
             margin-top: 20px;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
-
         th,
         td {
             padding: 8px;
@@ -47,27 +41,33 @@
 
 <body>
 
-    <div class="kop-surat">
-        <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png" alt="Logo Sekolah" style="height: 80px;">
-        <h2>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h2>
-        <h3>DINAS PENDIDIKAN</h3>
-        <h3>SEKOLAH MENENGAH ATAS NEGERI 3 SUMENEP</h3>
-        <p>Jalan Cendana No. 9A, Sumenep 20155<br>Tel/Fax: 061 8246940, e-mail: sma3_sumenep@gmail.com</p>
+    {{-- <div class="kop-surat">
+        <img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png"
+            alt="Logo Sekolah" style="height: 80px;">
+
         <hr>
-    </div>
+    </div> --}}
+    <table border="0" style="border: 0 !important; outline: 0 !important;">
+        <tr>
+            <td><img src="https://smabatuanadiwiyata.sch.id/wp-content/uploads/2024/05/cropped-logo-SMAGA.png"
+                    alt="Logo Sekolah" style="height: 80px;"></td>
+            <td>
+                <h2>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h2>
+                <h3>DINAS PENDIDIKAN</h3>
+                <h3>SEKOLAH MENENGAH ATAS NEGERI 3 SUMENEP</h3>
+                <p>Jalan Cendana No. 9A, Sumenep 20155<br>Tel/Fax: 061 8246940, e-mail: sma3_sumenep@gmail.com</p>
 
-    <p>No: 0425/77/234</p>
-    <p>Lamp: -</p>
-    <p>Hal: Daftar Kehadiran Siswa</p>
-    <br>
-    <p>Kepada Yth,<br>Bapak/Ibu Orang Tua/Wali Siswa</p>
-    <p>Di Tempat</p>
+            </td>
 
-    <p>Assalamu’alaikum Wr. Wb.<br>
-        Berikut kami lampirkan daftar kehadiran siswa SMAN 3 Sumenep:</p>
+        </tr>
+    </table>
+    <hr>
+    <hr style="margin-top: -0.7rem ">
+
+    <p align="center"><b>Data Siswa</b></p>
 
     <!-- Tabel Kehadiran -->
-    <table>
+    <table border="1">
         <thead>
             <tr>
                 <th>kelas</th>
