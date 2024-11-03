@@ -21,6 +21,110 @@ class RekapController extends Controller
         return view('rekap.index', compact('kelas'));
     }
 
+    public function sendPDFtoWA(Request $request)
+    {
+        // Ambil tanggal dan kelas ID dari request
+        $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
+        $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
+        $kelasId = $request->input('kelasId');
+
+
+        // Validasi ID kelas
+        $kelas = Kelas::find($kelasId);
+        if (!$kelas) {
+            return response()->json(['error' => 'ID kelas tidak valid.'], 400);
+        }
+
+        // Filter data absensi berdasarkan rentang tanggal dan kelas
+        $query = Absensi::with(['namaKelas', 'dataSiswa'])
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->whereHas('dataSiswa', function ($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            });
+
+        $absensi = $query->get();
+
+        // Cek apakah ada data siswa dalam kelas yang dipilih
+        if ($absensi->isEmpty()) {
+            return response()->json(['error' => 'Tidak ada siswa dalam kelas ini pada rentang tanggal yang dipilih.'], 404);
+        }
+
+        // Rekap data absensi berdasarkan kelas dan siswa
+        $rekap = [];
+        $kelasName = $kelas->nama_kelas;
+
+        foreach ($absensi as $ab) {
+            if ($ab->namaKelas) {
+                $kelasName = $ab->namaKelas->nama_kelas; // Set kelasName jika ada
+            }
+
+            $data_siswa = $ab->dataSiswa ? $ab->dataSiswa->nama : 'Unknown Siswa'; // Ambil nama siswa dari relasi
+
+            if (!isset($rekap[$data_siswa])) {
+                $rekap[$data_siswa] = [
+                    'nama' => $data_siswa,
+                    'status' => ['H' => 0, 'I' => 0, 'S' => 0, 'A' => 0]
+                ];
+            }
+
+            // Increment status count
+            $rekap[$data_siswa]['status'][$ab->status]++;
+        }
+
+        // Mengonversi rekap menjadi array yang dapat digunakan untuk tampilan
+        $dataSiswa = [];
+        foreach ($rekap as $siswa) {
+            $dataSiswa[] = (object) [
+                'nama' => $siswa['nama'],
+                'hadir_count' => $siswa['status']['H'],
+                'izin_count' => $siswa['status']['I'],
+                'sakit_count' => $siswa['status']['S'],
+                'alpa_count' => $siswa['status']['A'],
+            ];
+        }
+
+        $startDate = $startDate->translatedFormat('d F Y');
+        $endDate = $endDate->translatedFormat('d F Y');
+
+        // Render view Blade dan kirimkan data ke view tersebut
+        $html = view('rekap.templatepdf', compact('dataSiswa', 'kelasName', 'startDate', 'endDate'))->render();
+
+        // Inisialisasi mPDF
+        $mpdf = new \Mpdf\Mpdf();
+
+        // Masukkan HTML yang dirender ke dalam PDF
+        $mpdf->WriteHTML($html);
+        $fileName = "Rekap_Absensi_Kelas_{$kelasName}_Per_{$startDate}_{$endDate}.pdf";
+        $filePath = storage_path("app/public/$fileName");
+
+        // Simpan PDF ke dalam file
+        $mpdf->Output($filePath, 'F');
+
+        // Kembalikan URL untuk mengakses PDF
+        return response()->json(['url' => asset("storage/$fileName"), 'name' => $fileName], 200);
+    }
+
+
+    public function dataKelas()
+    {
+        $kelas = Kelas::all();
+        // send json response data kelas to server
+        return response()->json(['data' => $kelas], 200);
+    }
+    public function dataNomer(Request $request)
+    {
+        if ($request->token == '12345678') {
+            $noWaList = data_siswa::pluck('No_wa');
+
+            // send json response data noWaList to server
+            return response()->json(['data' => $noWaList], 200);
+        } else {
+            return response()->json(['error' => 'Tidak dapat mendapatkan data.'], 401);
+        }
+    }
+
+
+
 
     public function viewPDF(Request $request)
     {
@@ -154,7 +258,7 @@ class RekapController extends Controller
         $fileName = "Rekap Absensi Kelas $kelasName Per $startDate - $endDate";
 
         // Menampilkan file PDF di browser
-        return $mpdf->Output($fileName.'.pdf', 'D');  // 'I' untuk menampilkan PDF di browser
+        return $mpdf->Output($fileName . '.pdf', 'D');  // 'I' untuk menampilkan PDF di browser
     }
 
 
