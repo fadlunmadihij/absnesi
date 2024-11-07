@@ -16,7 +16,7 @@ class RekapController extends Controller
 {
     public function index()
     {
-        // Ambil semua kelas untuk dropdown
+        // Ambil semua data kelas untuk dropdown pada halaman rekap
         $kelas = Kelas::all();
         return view('rekap.index', compact('kelas'));
     }
@@ -24,16 +24,18 @@ class RekapController extends Controller
 
     public function viewPDF(Request $request)
     {
-        // Ambil tanggal dari request
+        // Ambil dan format tanggal mulai dan akhir dari request
         $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
         $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
 
+        // Ambil ID kelas dari request
         $kelasId = $request->input('kelasId');
 
-        // Filter data absensi berdasarkan rentang tanggal
+        // Query data absensi berdasarkan rentang tanggal dan kelas
         $query = Absensi::with(['namaKelas', 'dataSiswa'])
             ->whereBetween('tanggal', [$startDate, $endDate]);
-        // Jika kelasId ada, filter berdasarkan relasi ke kelas
+
+        // Filter berdasarkan kelas jika ID kelas diberikan
         if ($kelasId) {
             $query->whereHas('dataSiswa', function ($q) use ($kelasId) {
                 $q->where('kelas_id', $kelasId);
@@ -42,17 +44,20 @@ class RekapController extends Controller
 
         $absensi = $query->get();
 
-        // Rekap data absensi berdasarkan kelas dan siswa
+        // Inisialisasi array untuk rekap data absensi berdasarkan kelas dan siswa
         $rekap = [];
         $kelasName = Kelas::findOrFail($kelasId)->nama_kelas;
 
+        // Loop untuk mengisi data rekap absensi berdasarkan status
         foreach ($absensi as $ab) {
             if ($ab->namaKelas) {
                 $kelasName = $ab->namaKelas->nama_kelas; // Set kelasName
             }
 
-            $data_siswa = $ab->dataSiswa ? $ab->dataSiswa->nama : 'Unknown Siswa'; // Ambil nama siswa dari relasi
+            // Ambil nama siswa dari relasi dataSiswa
+            $data_siswa = $ab->dataSiswa ? $ab->dataSiswa->nama : 'Unknown Siswa';
 
+            // Inisialisasi status absensi siswa jika belum ada
             if (!isset($rekap[$data_siswa])) {
                 $rekap[$data_siswa] = [
                     'nama' => $data_siswa,
@@ -60,10 +65,11 @@ class RekapController extends Controller
                 ];
             }
 
-            // Increment status count
+            // Tambahkan jumlah ke status absensi yang sesuai
             $rekap[$data_siswa]['status'][$ab->status]++;
         }
-        // Mengonversi rekap menjadi array yang dapat digunakan untuk tampilan
+
+        // Konversi rekap menjadi format array untuk tampilan
         $dataSiswa = [];
         foreach ($rekap as $siswa) {
             $dataSiswa[] = (object) [
@@ -74,27 +80,27 @@ class RekapController extends Controller
                 'alpa_count' => $siswa['status']['A'],
             ];
         }
+
+        // Format ulang tanggal untuk tampilan
         $startDate = $startDate->translatedFormat('d F Y');
         $endDate = $endDate->translatedFormat('d F Y');
-        // Render view Blade dan kirimkan data ke view tersebut
+
+         // Render tampilan PDF dengan data yang sudah diolah
         $html = view('rekap.templatepdf', compact('dataSiswa', 'kelasName', 'startDate', 'endDate'))->render();
 
-        // Inisialisasi mPDF
+        // Inisialisasi mPDF untuk membuat file PDF
         $mpdf = new \Mpdf\Mpdf();
-
-        // Masukkan HTML yang dirender ke dalam PDF
         $mpdf->WriteHTML($html);
 
-        // Menampilkan file PDF di browser
-        return $mpdf->Output('rekap-kehadiran.pdf', 'I');  // 'I' untuk menampilkan PDF di browser
+        // Tampilkan PDF di browser
+        return $mpdf->Output('rekap-kehadiran.pdf', 'I');
     }
 
     public function downloadPDF(Request $request)
     {
-        // Ambil tanggal dari request
+        // Mirip dengan viewPDF, tetapi untuk mengunduh PDF
         $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
         $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
-
         $kelasId = $request->input('kelasId');
 
         // Filter data absensi berdasarkan rentang tanggal
@@ -162,6 +168,7 @@ class RekapController extends Controller
 
     public function filterRekap(Request $request)
     {
+        // Mengambil data absensi berdasarkan rentang tanggal dan kelas tertentu
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
         $kelasId = $request->input('kelas_id');
@@ -214,10 +221,14 @@ class RekapController extends Controller
                 ], 200);
             } else {
 
+                // Hitung absensi per status dalam rentang tanggal yang diberikan
                 $startDate = Carbon::parse($request->start_date)->startOfDay();
                 $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+                // Ambil kelas ID jika ada
                 $kelasId = $request->kelas_id;
 
+                // Ambil jumlah kehadiran, izin, sakit, dan alpa untuk setiap siswa
                 $data = data_siswa::when($kelasId, function ($query) use ($kelasId) {
                     return $query->where('kelas_id', $kelasId);
                 })->withCount([

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class KriteriaController extends Controller
 {
+    // data json untuk contoh perhitungan
     public function index()
     {
         $kriteria = [
@@ -14,7 +15,7 @@ class KriteriaController extends Controller
             ['KODE' => 'C3', 'KRITERIA' => 'ALFA', 'BOBOT' => "15%", 'ATRIBUT' => "COST"],
             ['KODE' => 'C4', 'KRITERIA' => 'SAKIT', 'BOBOT' => "5%", 'ATRIBUT' => "COST"]
         ];
-
+        // return untuk menampilkan
         return view('perhitungan.kriteria', compact('kriteria'));
     }
 }

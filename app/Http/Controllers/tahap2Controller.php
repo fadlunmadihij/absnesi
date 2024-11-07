@@ -8,6 +8,7 @@ class tahap2Controller extends Controller
 {
     public function index()
     {
+        // data json untuk contoh perhitungan
         $tahap2 = [
             ['ALTERNATIF' => 'A1', 'C1' => '2', 'C2' => "2", 'C3' => "3", 'C4' => "1"],
             ['ALTERNATIF' => 'A2', 'C1' => '1', 'C2' => "2", 'C3' => "2", 'C4' => "2"],

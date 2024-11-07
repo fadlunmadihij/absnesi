@@ -9,109 +9,53 @@ use Illuminate\Http\Request;
 
 class QRController extends Controller
 {
+
+    // Menampilkan halaman index untuk memilih siswa yang ingin dibuat QR Code-nya
     public function index()
     {
-        $dataSiswa = data_siswa::all();
-        return view('qr.qr_code', compact('dataSiswa'));
+        $dataSiswa = data_siswa::all();// Mengambil semua data siswa dari database
+        return view('qr.qr_code', compact('dataSiswa'));// Menampilkan halaman qr_code dengan data siswa
     }
 
+    // Membuat QR Code untuk siswa berdasarkan NISN
     public function generateQRCode(Request $request)
 {
     $request->validate([
-        'siswa_id' => 'required|exists:data_siswas,id',
+        'siswa_id' => 'required|exists:data_siswas,id', // Validasi input siswa_id harus ada di tabel data_siswas
     ]);
 
     try {
-        $siswa = data_siswa::findOrFail($request->siswa_id);
+        $siswa = data_siswa::findOrFail($request->siswa_id);// Mencari data siswa berdasarkan siswa_id
+
 
         // Pastikan NISN tidak null
         if (is_null($siswa->NISN) || $siswa->NISN === '') {
-            return back()->withErrors(['NISN tidak ditemukan atau kosong untuk siswa ini.']);
+            return back()->withErrors(['NISN tidak ditemukan atau kosong untuk siswa ini.']);// Kembali dengan pesan error jika NISN kosong
         }
 
         // Generate QR Code berdasarkan NISN siswa
         $qrCode = Builder::create()
-            ->data($siswa->NISN)
+            ->data($siswa->NISN)  // Menambahkan NISN sebagai data dalam QR Code
             ->build();
 
-        // Simpan QR Code sebagai file gambar di direktori public/qrcodes
+        // Menyimpan QR Code sebagai file gambar di direktori public/qrcodes
         $qrCode->saveToFile(public_path('qrcodes/'.$siswa->NISN.'.png'));
 
-        // Tampilkan halaman dengan QR Code yang baru dibuat
+        // Redirect ke halaman show QR Code untuk menampilkan QR Code yang baru saja dibuat
         return redirect()->route('show_qr', $siswa->id);
     } catch (ModelNotFoundException $e) {
-        abort(404, 'Siswa tidak ditemukan');
+        abort(404, 'Siswa tidak ditemukan'); // Tampilkan error 404 jika siswa tidak ditemukan
     }
 }
 
+ // Menampilkan QR Code siswa pada halaman tertentu
 public function showQRCode(data_siswa $siswa)
 {
     // Generate QR Code berdasarkan NISN siswa
     $qrCode = Builder::create()
         ->data($siswa->NISN)
         ->build();
-
+    // Menampilkan halaman show_qr dengan data siswa dan QR Code
     return view('qr.show_qr', compact('siswa', 'qrCode'));
 }
-
-
-
-//     public function generate($nisn)
-//     {
-//         $result = Builder::create()
-//             ->data($nisn)
-//             ->build();
-
-//         header('Content-Type: '.$result->getMimeType());
-//         echo $result->getString();
-//     }
-
-//     public function showQRCode()
-//     {
-//         // Ambil siswa pertama atau sesuai kriteria yang Anda tentukan
-//         $siswa = data_siswa::first(); // Misalnya, ambil siswa pertama
-
-//         if (!$siswa) {
-//             abort(404, 'Siswa tidak ditemukan');
-//         }
-
-//         // Generate QR Code berdasarkan NISN siswa
-//         $qrCode = Builder::create()
-//             ->data($siswa->NISN)
-//             ->build();
-
-//         // Simpan QR Code sebagai file gambar di direktori public/qrcodes
-//         $qrCode->saveToFile(public_path('qrcodes/'.$siswa->NISN.'.png'));
-
-//         // Tampilkan view dengan data siswa dan path ke QR Code
-//         return view('qr.qr_code', compact('siswa'));
-//     }
-//     public function generateAuto()
-//     {
-//         // Misalnya, ambil siswa dengan ID terakhir
-//         $siswa = data_siswa::latest()->firstOrFail();
-
-//         // Generate QR Code berdasarkan NISN siswa
-//         $nisn = $siswa->NISN;
-
-//         return view('qr.qr_code', compact('nisn', 'siswa'));
-//     }
-//     public function generateForSiswa($siswaId)
-// {
-//     // Ambil siswa berdasarkan ID yang diberikan
-//     $siswa = data_siswa::findOrFail($siswaId);
-
-//     // Generate QR Code berdasarkan NISN siswa
-//     $qrCode = Builder::create()
-//         ->data($siswa->NISN)
-//         ->build();
-
-//     // Simpan QR Code sebagai file gambar di direktori public/qrcodes
-//     $qrCode->saveToFile(public_path('qrcodes/'.$siswa->NISN.'.png'));
-
-
-//     // Tampilkan view dengan data siswa dan path ke QR Code
-//     return view('qr.qr_code', compact('siswa'));
-// }
-
 }

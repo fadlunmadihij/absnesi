@@ -8,6 +8,7 @@ class normalisasiController extends Controller
 {
     public function index()
     {
+        // data json untuk contoh perhitungan
         $normalisasi = [
             ['ALTERNATIF' => 'A1', 'C1' => '0,5', 'C2' => "1", 'C3' => "0,3", 'C4' => "1"],
             ['ALTERNATIF' => 'A2', 'C1' => '1', 'C2' => "1", 'C3' => "0,5", 'C4' => "0,5"],

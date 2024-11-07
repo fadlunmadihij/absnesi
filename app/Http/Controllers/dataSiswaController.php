@@ -13,6 +13,7 @@ class dataSiswaController extends Controller
 {
     public function index()
     {
+        // ini fungsi/logika, untuk masuk kehalaman absensi dan $datasiswa adalah parameter untuk mengambil data dari tabel datasiswa yg ada di database
         $dataSiswa = data_siswa::latest()->get();
         return view('siswa.index', compact('dataSiswa'));
     }
@@ -20,12 +21,14 @@ class dataSiswaController extends Controller
 
     public function create(): View
     {
+        // fungsi ini digunakan untuk masuk ke halaman tambah data siswa, $jeniskelamin digunakan untuk menginisialisasikan untuk jenis kelamin yg ada menggunakan boolean yah itu laki-laki dan perempuan, $kelas digunakan untuk mengambil id kelas sesuai siswanya ada di kelas mana
         $jeniskelamin = ['laki-laki', 'perempuan'];
         $kelas = kelas::all();
         return view('siswa.tambahdata', compact('kelas', 'jeniskelamin'));
     }
     public function store(Request $request)
     {
+        // logika proses penambahan data siswa
         $post = data_siswa::create([
             'kelas_id'     => $request->input('kelas_id'),
             'nama'     => $request->input('nama'),
@@ -40,12 +43,14 @@ class dataSiswaController extends Controller
 
     function edit(data_siswa $dataSiswa)
     {
+        // fungsi untuk masuk ke halaman edit siswa
         $jeniskelamin = ['laki-laki', 'perempuan'];
         $kelas = kelas::all();
         return view('siswa/editSiswa', compact('kelas', 'jeniskelamin', 'dataSiswa'));
     }
     function update(Request $request, data_siswa $dataSiswa)
     {
+        // logika update siswa
         $dataSiswa->update(
             $request->all()
 
@@ -54,6 +59,7 @@ class dataSiswaController extends Controller
     }
     public function destroy(data_siswa $dataSiswa)
     {
+        // logika hapus siswa
         $dataSiswa->delete();
         return redirect('/siswa');
     }

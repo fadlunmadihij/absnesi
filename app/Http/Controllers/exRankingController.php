@@ -8,6 +8,7 @@ class exRankingController extends Controller
 {
     public function index()
     {
+        // data json untuk contoh perhitungan
         $exRanking = [
             ['ALTERNATIF' => 'A5', 'NILAI Vi' => '100', 'RANKING' => "1"],
             ['ALTERNATIF' => 'A4', 'NILAI Vi' => '93', 'RANKING' => "2"],
@@ -15,7 +16,7 @@ class exRankingController extends Controller
             ['ALTERNATIF' => 'A3', 'NILAI Vi' => '87,5', 'RANKING' => "4"],
             ['ALTERNATIF' => 'A1', 'NILAI Vi' => '84,5', 'RANKING' => "5"],
         ];
-
+        // untuk menampilkan view
         return view('perhitungan.exRanking', compact('exRanking'));
     }
 }

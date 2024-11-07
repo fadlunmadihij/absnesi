@@ -8,6 +8,7 @@ class indikatorController extends Controller
 {
     public function index()
     {
+        // data json untuk contoh perhitungan
         $indikator = [
             [
                 'kode' => 'C1/Izin',
@@ -43,7 +44,7 @@ class indikatorController extends Controller
             ],
             // Tambahkan data kriteria lainnya di sini...
         ];
-
+        // untuk menampilkan view
         return view('perhitungan.indikator', compact('indikator'));
 
     }

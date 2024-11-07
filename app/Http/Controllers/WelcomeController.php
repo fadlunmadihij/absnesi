@@ -11,11 +11,13 @@ class WelcomeController extends Controller
 {
     public function scan()
     {
+        // ini berfungsi untuk masuk ke halaman scannya
         return view('scan.index');
     }
 
     public function validasi(Request $request)
     {
+        // validasi nisnnya
         if ($request->ajax()) {
             $qr_code = $request->qr_code;
             $siswa = data_siswa::where('NISN', $qr_code)->with('kelas')->first();
@@ -39,13 +41,13 @@ class WelcomeController extends Controller
                         ], 400);
                     }
 
-                    // Buat entri absensi baru
+                    // Buat absensi baru
                     absensi::create([
                         'data_siswa_id' => $siswa->id,
                         'tanggal' => now(),
                         'status' => 'H'
                     ]);
-
+                    // kalo sukses, menampilkan nama kelas nisn
                     return response()->json([
                         "status" => "success",
                         "nama" => $siswa->nama,
@@ -53,12 +55,14 @@ class WelcomeController extends Controller
                         "NISN" => $siswa->NISN
                     ], 200);
                 } else {
+                    // jika nisn nya tidak ada maka muncul pesan nisn tidak ditemukan
                     return response()->json([
                         "status" => "error",
                         "message" => "NISN tidak ditemukan"
                     ], 404);
                 }
             } else {
+                // jika waktunya sudah lewat sesuai yang sudah ditentukan, maka muncul waktu absensi sudah lewat
                 return response()->json([
                     "status" => "error",
                     "message" => "Waktu absensi sudah lewat :"

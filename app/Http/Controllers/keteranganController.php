@@ -92,6 +92,7 @@ class keteranganController extends Controller
 
     public function destroy(keterangan $keterangan)
     {
+        // fungsi untuk hapus data
         $keterangan->delete();
         return redirect('/keterangan');
     }
