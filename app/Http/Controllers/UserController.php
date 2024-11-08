@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -24,7 +25,9 @@ class UserController extends Controller
         Validator::make($request->all(), [
             'name' => 'required', // Nama wajib diisi
             'email' => 'required|email', // Email wajib diisi dan harus format email
-            'password' => 'required|confirmed' // Password wajib diisi dan harus terkonfirmasi (password_confirmation harus cocok)
+            'password' => 'required|confirmed', // Password wajib diisi dan harus terkonfirmasi (password_confirmation harus cocok)
+            'phone' => 'nullable|string|max:20', // Opsional (nullable)
+            'address' => 'nullable|string|max:255',
         ])->validate();
 
         // Membuat user baru dengan level "Admin"
@@ -82,5 +85,42 @@ class UserController extends Controller
     {
         // Menampilkan halaman profil user
         return view('auth/profile');
+    }
+
+    // Method untuk mengupdate profil user
+    public function updateProfile(Request $request)
+    {
+        // Validasi input
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20', // Wajib diisi
+            'address' => 'required|string|max:255', // Wajib diisi
+        ], [
+            'phone.required' => 'Phone masih belum di isi.',
+            'address.required' => 'alamat masih belum di isi.',
+        ]);
+
+        // Ambil user yang sedang login
+        $user = Auth::user();
+
+        // Debugging
+        if (!$user) {
+            return back()->withErrors(['message' => 'User not authenticated']);
+        }
+
+        // Pastikan $user adalah instance dari App\Models\User
+        if (!($user instanceof User)) {
+            return back()->withErrors(['message' => 'Invalid user model']);
+        }
+
+        // Update data user
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+        $user->address = $request->address;
+
+        // Simpan data
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Profile updated successfully');
     }
 }

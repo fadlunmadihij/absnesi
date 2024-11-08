@@ -24,7 +24,6 @@
                 <th>SISWA</th> <!-- Nama siswa -->
                 <th>TANGGAL</th> <!-- Tanggal absensi -->
                 <th>ABSEN</th> <!-- Status absensi -->
-                <th>Action</th> <!-- Aksi edit dan hapus -->
             </tr>
         </thead>
         <tbody>+
@@ -38,18 +37,6 @@
                         <td class="align-middle">{{ $ab->dataSiswa['nama'] }}</td>
                         <td class="align-middle">{{ $ab->tanggal }}</td> <!-- Tanggal absensi -->
                         <td class="align-middle">{{ $ab->status }}</td> <!-- Status absensi -->
-                        <td class="align-middle">
-                            <!-- Tombol Edit dan Hapus dalam grup tombol -->
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <a href="absen/{{$ab->id}}" type="button" class="btn btn-warning">Edit</a> <!-- Tombol Edit -->
-                                <form action="/absen/{{$ab->id}}" method="POST" type="button" class="btn btn-danger p-0" onsubmit="return confirm('Delete?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <!-- Tombol Hapus -->
-                                    <button class="btn btn-danger m-0">Delete</button>
-                                </form>
-                            </div>
-                        </td>
                     </tr>
                 @endforeach
             @else

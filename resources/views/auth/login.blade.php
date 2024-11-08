@@ -113,6 +113,7 @@
                   <!-- Link untuk membuat akun -->
                   <div class="text-center">
                     <a class="small" href="{{ route('register') }}">Buat Akun!</a>
+                    <a class="dropdown-item" href="{{ route('password.request') }}">Forgot Password?</a>
                   </div>
                 </div>
               </div>

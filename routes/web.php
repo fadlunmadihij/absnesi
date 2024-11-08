@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\absenController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\dataSiswaController;
 use App\Http\Controllers\exampleController;
 use App\Http\Controllers\exRankingController;
@@ -44,14 +46,31 @@ Route::controller(UserController::class)->group(function () {
     Route::post('login', 'loginAction')->name('login.action');
 
     Route::get('logout', 'logout')->middleware('auth')->name('logout');
+
+
 });
+    // Forgot Password Routes
+    // Rute untuk halaman memasukkan email untuk reset password
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+
+    // Rute untuk mengirim email reset link
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+    // Rute untuk menampilkan form reset password
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+
+    // Rute untuk melakukan reset password
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', function () {
         $jumlahKelas = Kelas::count();
         $sis = data_siswa::count();
-        return view('dashboard', compact('jumlahKelas', 'sis'));
+        $user = auth()->user(); // Pastikan user yang login diambil
+        return view('dashboard', compact('jumlahKelas', 'sis', 'user'));
     })->name('dashboard');
+
 
     // ROUTE DATA SISWA
     Route::get('siswa', [dataSiswaController::class, 'index']);
@@ -115,6 +134,10 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('detail_rekap', [RekapController::class, 'detail_rekap']);
 });
+
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
