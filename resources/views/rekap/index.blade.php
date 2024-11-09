@@ -50,6 +50,7 @@
                     <polyline points="7 10 12 15 17 10" />
                     <line x1="12" x2="12" y1="15" y2="3" />
                 </svg></button>
+                <button id="sendWAButton" class="btn btn-success mt-3">Kirim Rekap ke WA</button>
         </div>
     </div>
 </div>
@@ -76,6 +77,10 @@
 @endsection
 
 @section('js')
+<!-- di Blade file -->
+<script src="{{ asset('js/send.js') }}"></script>
+
+
 <script>
     const viewPdf = () => {
     let startDate = document.getElementById('start_date').value;

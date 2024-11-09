@@ -1,2 +1,3 @@
-2024/11/09-19:08:25.179 264 Creating DB C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Session Storage since it was missing.
-2024/11/09-19:08:25.211 264 Reusing MANIFEST C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Session Storage/MANIFEST-000001
+2024/11/09-19:51:15.475 1818 Reusing MANIFEST C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Session Storage/MANIFEST-000001
+2024/11/09-19:51:15.476 1818 Recovering log #3
+2024/11/09-19:51:15.476 1818 Reusing old log C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Session Storage/000003.log 

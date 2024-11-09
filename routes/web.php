@@ -18,6 +18,7 @@ use App\Http\Controllers\RekapController;
 use App\Http\Controllers\tahap1Controller;
 use App\Http\Controllers\tahap2Controller;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WaController;
 use App\Http\Controllers\WelcomeController;
 use App\Models\data_siswa;
 use App\Models\Kelas;
@@ -51,16 +52,16 @@ Route::controller(UserController::class)->group(function () {
 });
     // Forgot Password Routes
     // // Rute untuk halaman memasukkan email untuk reset password
-    // Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 
-    // // Rute untuk mengirim email reset link
-    // Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    // Rute untuk mengirim email reset link
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
-    // // Rute untuk menampilkan form reset password
-    // Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    // Rute untuk menampilkan form reset password
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
-    // // Rute untuk melakukan reset password
-    // Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+    // Rute untuk melakukan reset password
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 Route::middleware('auth')->group(function () {
@@ -120,6 +121,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rekap/filter', [RekapController::class, 'hitungRekap'])->name('hitungRekap.filter');
     Route::post('rekap/view/pdf', [RekapController::class, 'viewPDF']);
     Route::post('rekap/download/pdf', [RekapController::class, 'downloadPDF']);
+    Route::post('/send-recap', [WaController::class, 'sendMessage']);
 
     // ROUTER RANKING
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');

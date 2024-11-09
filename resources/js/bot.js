@@ -230,4 +230,12 @@ client.on("message", async (message) => {
     }
 });
 
+// bot.js
+if (typeof window !== "undefined") {
+    window.kirimRekapKeWA = function (rekapData) {
+        console.log("Mengirim rekap via WA:", rekapData);
+        // Logika tambahan jika diperlukan
+    };
+}
+
 client.initialize();
