@@ -51,17 +51,22 @@ Route::controller(UserController::class)->group(function () {
 
 });
     // Forgot Password Routes
-    // // Rute untuk halaman memasukkan email untuk reset password
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 
-    // Rute untuk mengirim email reset link
-    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+// Proses pengiriman OTP
+Route::post('password/send-otp', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
+// routes/web.php
+// Menampilkan form verifikasi OTP
+Route::get('password/verify-otp', [ForgotPasswordController::class, 'showVerifyOtpForm'])->name('password.verifyOtpForm');
 
-    // Rute untuk menampilkan form reset password
-    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
-    // Rute untuk melakukan reset password
-    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+// Rute untuk memproses verifikasi OTP
+Route::post('password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
+
+// Menangani verifikasi OTP dan pembaruan password
+Route::post('password/reset', [ForgotPasswordController::class, 'verifyResetPassword'])->name('password.verify');
+
+
 
 
 Route::middleware('auth')->group(function () {
