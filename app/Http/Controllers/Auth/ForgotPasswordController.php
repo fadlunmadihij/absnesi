@@ -102,7 +102,7 @@ class ForgotPasswordController extends Controller
 
         Log::info("Password for user {$user->email} has been updated.");
 
-        return response()->json(['message' => 'Password successfully updated'], 200);
+        return view('auth/login');
     }
 
 
