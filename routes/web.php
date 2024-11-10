@@ -20,9 +20,11 @@ use App\Http\Controllers\tahap2Controller;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WaController;
 use App\Http\Controllers\WelcomeController;
+use App\Models\Absensi;
 use App\Models\data_siswa;
 use App\Models\Kelas;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -73,9 +75,15 @@ Route::middleware('auth')->group(function () {
     Route::get('dashboard', function () {
         $jumlahKelas = Kelas::count();
         $sis = data_siswa::count();
-        $user = auth()->user(); // Pastikan user yang login diambil
-        return view('dashboard', compact('jumlahKelas', 'sis', 'user'));
+
+        // Hitung total absensi dari seluruh siswa
+        $totalAbsen = Absensi::count(); // Jumlah total absensi
+
+        $user = auth()->user();
+        return view('dashboard', compact('jumlahKelas', 'sis', 'user', 'totalAbsen'));
     })->name('dashboard');
+
+
 
 
     // ROUTE DATA SISWA
