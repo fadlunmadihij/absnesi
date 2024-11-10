@@ -46,12 +46,12 @@ class ForgotPasswordController extends Controller
         try {
             Mail::to($user->email)->send(new ResetPasswordMail($otp));
 
-            // Jika email berhasil dikirim, redirect ke halaman verifikasi OTP
+            // Jika email berhasil dikirim, masuk ke halaman verifikasi OTP
             return redirect()->route('password.verifyOtpForm', ['email' => $user->email]);
 
         } catch (\Exception $e) {
             // Jika terjadi kesalahan dalam pengiriman email, tampilkan pesan error
-            return response()->json(['message' => 'Failed to send OTP email: ' . $e->getMessage()], 500);
+            return view('auth.passwords.email');
         }
     }
 

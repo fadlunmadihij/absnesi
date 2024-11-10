@@ -55,18 +55,18 @@ Route::controller(UserController::class)->group(function () {
     // Forgot Password Routes
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 
-// Proses pengiriman OTP
-Route::post('password/send-otp', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
-// routes/web.php
-// Menampilkan form verifikasi OTP
-Route::get('password/verify-otp', [ForgotPasswordController::class, 'showVerifyOtpForm'])->name('password.verifyOtpForm');
+    // Proses pengiriman OTP
+    Route::post('password/send-otp', [ForgotPasswordController::class, 'sendOtp'])->name('password.sendOtp');
+    // routes/web.php
+    // Menampilkan form verifikasi OTP
+    Route::get('password/verify-otp', [ForgotPasswordController::class, 'showVerifyOtpForm'])->name('password.verifyOtpForm');
 
 
-// Rute untuk memproses verifikasi OTP
-Route::post('password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
+    // Rute untuk memproses verifikasi OTP
+    Route::post('password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('password.verifyOtp');
 
-// Menangani verifikasi OTP dan pembaruan password
-Route::post('password/reset', [ForgotPasswordController::class, 'verifyResetPassword'])->name('password.verify');
+    // Menangani verifikasi OTP dan pembaruan password
+    Route::post('password/reset', [ForgotPasswordController::class, 'verifyResetPassword'])->name('password.verify');
 
 
 
