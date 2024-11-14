@@ -1,3 +1,2 @@
-2024/11/09-19:51:14.416 2aa4 Reusing MANIFEST C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Service Worker\Database/MANIFEST-000001
-2024/11/09-19:51:14.417 2aa4 Recovering log #3
-2024/11/09-19:51:14.417 2aa4 Reusing old log C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Service Worker\Database/000003.log 
+2024/11/14-21:22:25.373 2fc8 Creating DB C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Service Worker\Database since it was missing.
+2024/11/14-21:22:25.385 2fc8 Reusing MANIFEST C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Service Worker\Database/MANIFEST-000001

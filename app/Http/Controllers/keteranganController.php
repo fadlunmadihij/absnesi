@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class keteranganController extends Controller
 {
-    // Method untuk menampilkan semua data keterangan
+    // logika untuk menampilkan semua data keterangan
     public function index()
     {
         // Ambil semua data keterangan dari database, diurutkan dari yang terbaru
@@ -19,7 +19,7 @@ class keteranganController extends Controller
         return view('keterangan.index', compact('ket'));
     }
 
-    // Method untuk menampilkan form tambah keterangan
+    // logika untuk menampilkan form tambah keterangan
     public function create(): View
     {
         // Ambil semua data siswa dari database

@@ -26,10 +26,121 @@ client.on("ready", () => {
 let awaitingDateRange = false;
 let awaitingClassSelection = false;
 let awaitingShareConfirmation = false;
+let awaitingSendToWA = false;
 let startDate = "";
 let endDate = "";
 let classes = [];
+let IdKelas = "";
 let pdfFilePath = "";
+
+// Fungsi untuk mendapatkan data rekap yang belum diproses
+const cek = async () => {
+    try {
+        const response = await axios.get(
+            "http://localhost:8000/api/get-pending-rekap"
+        );
+        const { data, status } = response.data;
+
+        if (status === "success" && data.length > 0) {
+            startDate = data[0].start_date;
+            endDate = data[0].end_date;
+            IdKelas = data[0].kelas_id;
+            console.log(`Mendapatkan data kelas ID: ${IdKelas}`);
+
+            // Ambil nomor WhatsApp berdasarkan kelas ID
+            const noWaList = await getNoWA(IdKelas);
+            if (noWaList.length > 0) {
+                const pdfUrl = await generatePDF(IdKelas, startDate, endDate);
+                if (pdfUrl) {
+                    await sendPdfToMultipleWhatsApp(noWaList, pdfUrl);
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error mendapatkan data rekap:", error.message);
+    }
+};
+
+// Fungsi untuk mendapatkan nomor WhatsApp berdasarkan kelas
+const getNoWA = async (kelasId) => {
+    try {
+        const response = await axios.post(
+            "http://localhost:8000/api/get-no-wa",
+            {
+                token: 12345678,
+                kelas_id: kelasId,
+            }
+        );
+        const { data, status } = response.data;
+        return status === "success" ? data : [];
+    } catch (error) {
+        console.error("Error mendapatkan nomor WhatsApp:", error.message);
+        return [];
+    }
+};
+
+// Fungsi untuk generate PDF dari API
+const generatePDF = async (kelasId, startDate, endDate) => {
+    try {
+        const response = await axios.post(
+            "http://localhost:8000/api/sendPDFtoWA",
+            {
+                startDate,
+                endDate,
+                kelasId,
+            }
+        );
+        if (response.status === 200) {
+            const pdfUrl = response.data.url.replace(/ /g, "%20");
+            return pdfUrl;
+        }
+    } catch (error) {
+        console.error("Error saat generate PDF:", error.message);
+        return null;
+    }
+};
+const resetReq = async () => {
+    try {
+        const res = await axios.get("http://localhost:8000/api/reset-request");
+        const { data } = response;
+        if (data.success === true) {
+            console.log("data dibersihkan");
+        }
+    } catch (error) {
+        console.log("error");
+    }
+};
+// Fungsi untuk mengirim PDF ke beberapa nomor WhatsApp
+const sendPdfToMultipleWhatsApp = async (noWaList, pdfUrl) => {
+    try {
+        const pdfResponse = await axios.get(pdfUrl, {
+            responseType: "arraybuffer",
+        });
+        pdfFilePath = path.join(__dirname, "rekap.pdf");
+        fs.writeFileSync(pdfFilePath, pdfResponse.data);
+
+        const media = MessageMedia.fromFilePath(pdfFilePath);
+
+        for (const nomor of noWaList) {
+            const formattedNomor = formatNomorWA(nomor);
+
+            // Jeda 5-10 detik antar pengiriman pesan
+            await new Promise((resolve) =>
+                setTimeout(resolve, Math.random() * (10000 - 5000) + 5000)
+            );
+
+            await client.sendMessage(`${formattedNomor}@c.us`, media, {
+                caption: "Berikut rekap kehadiran siswa.",
+            });
+
+            console.log(`PDF berhasil dikirim ke nomor: ${formattedNomor}`);
+        }
+        console.log("Semua pesan berhasil dikirim.");
+        await resetReq();
+    } catch (error) {
+        console.error("Error saat mengirim PDF:", error);
+    }
+};
 
 // Function
 // Fungsi untuk mengubah awalan '08' menjadi '628'
@@ -169,6 +280,73 @@ client.on("message", async (message) => {
             }
             awaitingClassSelection = false;
         }
+    } else if (awaitingSendToWA) {
+        try {
+            console.log(`Memproses permintaan rekap...`);
+            const apiResponse = await axios.post(
+                "http://localhost:8000/api/sendPDFtoWA",
+                {
+                    startDate,
+                    endDate,
+                    kelasId: IdKelas,
+                }
+            );
+
+            // Tangani response error dari API
+            if (apiResponse.data.error) {
+                console.error(`Error: ${apiResponse.data.error}`);
+                message.reply(`Error: ${apiResponse.data.error}`);
+                awaitingSendToWA = false;
+                return;
+            }
+
+            if (apiResponse.status !== 200) {
+                message.reply(
+                    "Terjadi kesalahan saat mendapatkan rekap kehadiran."
+                );
+                awaitingSendToWA = false;
+                return;
+            }
+            const encodedUrl = apiResponse.data.url.replace(/ /g, "%20");
+            const pdfUrl = encodedUrl;
+            // console.log(pdfUrl);
+            // console.log(__dirname);
+            // return;
+            message.reply("Sabar...");
+
+            const pdfResponse = await axios.get(pdfUrl, {
+                responseType: "arraybuffer",
+            });
+            pdfFilePath = path.join(__dirname, apiResponse.data.name + ".pdf");
+
+            fs.writeFileSync(pdfFilePath, pdfResponse.data);
+            console.log(`PDF berhasil disimpan di: ${pdfFilePath}`);
+
+            const media = MessageMedia.fromFilePath(pdfFilePath);
+            await client.sendMessage(userId, media, {
+                caption: `Berikut Rekap Kehadiran siswa/siswi untuk kelas antara ${startDate} hingga ${endDate}`,
+            });
+
+            console.log(`PDF berhasil dikirim ke ${userId}`);
+            awaitingSendToWA = false;
+            awaitingShareConfirmation = true;
+            client.sendMessage(
+                userId,
+                "Apakah PDF ini akan dibagikan ke ortu/wali siswa? Balas 'iya' untuk mengirim."
+            );
+        } catch (error) {
+            console.error("Error saat mengirim PDF:", error);
+            let errorMsg = error.response;
+
+            if (errorMsg == undefined) {
+                message.reply(
+                    "Terjadi kesalahan saat mengirim rekap kehadiran."
+                );
+            } else {
+                message.reply(`${error.response.data.error}`);
+            }
+            awaitingSendToWA = false;
+        }
     } else if (awaitingShareConfirmation) {
         if (userMessage.toLowerCase() === "iya") {
             try {
@@ -227,15 +405,11 @@ client.on("message", async (message) => {
             "Silakan masukkan rentang waktu dengan format YYYY-MM-DD YYYY-MM-DD. Contoh: 2024-07-01 2024-07-31"
         );
         console.log(`Bot meminta rentang waktu dari ${userId}`);
+    } else if (userMessage === "sendToWali") {
+        message.reply("Tunggu...");
+        console.log(`Bot memproses permintaan`);
+        await cek();
     }
 });
-
-// bot.js
-if (typeof window !== "undefined") {
-    window.kirimRekapKeWA = function (rekapData) {
-        console.log("Mengirim rekap via WA:", rekapData);
-        // Logika tambahan jika diperlukan
-    };
-}
 
 client.initialize();

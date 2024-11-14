@@ -11,12 +11,25 @@ use function Laravel\Prompts\table;
 
 class dataSiswaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // ini fungsi/logika, untuk masuk kehalaman absensi dan $datasiswa adalah parameter untuk mengambil data dari tabel datasiswa yg ada di database
-        $dataSiswa = data_siswa::latest()->get();
-        return view('siswa.index', compact('dataSiswa'));
+        // Ambil semua data kelas untuk dropdown filter
+        $kelasList = kelas::all();
+
+        // Ambil parameter filter dari request
+        $kelasId = $request->input('kelas_id');
+
+        // Jika ada filter kelas, tampilkan siswa sesuai kelas yang dipilih
+        if ($kelasId) {
+            $dataSiswa = data_siswa::where('kelas_id', $kelasId)->latest()->get();
+        } else {
+            // Jika tidak ada filter, tampilkan semua siswa
+            $dataSiswa = data_siswa::latest()->get();
+        }
+
+    return view('siswa.index', compact('dataSiswa', 'kelasList', 'kelasId'));
     }
+
 
 
     public function create(): View

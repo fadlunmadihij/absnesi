@@ -134,6 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rekap/filter', [RekapController::class, 'hitungRekap'])->name('hitungRekap.filter');
     Route::post('rekap/view/pdf', [RekapController::class, 'viewPDF']);
     Route::post('rekap/download/pdf', [RekapController::class, 'downloadPDF']);
+    Route::post('/rekap/send-wa-pdf', [RekapController::class, 'sendWAPdf']);
     Route::post('/send-recap', [WaController::class, 'sendMessage']);
 
     // ROUTER RANKING

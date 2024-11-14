@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use DB;
+use Mpdf\Mpdf;
+use Carbon\Carbon;
+use App\Models\Kelas;
 use App\Models\Absensi;
 use App\Models\data_siswa;
-use App\Models\DataSiswa; // Sesuaikan nama model dengan file Anda
-use App\Models\Kelas;
-use Carbon\Carbon;
+use App\Models\RekapRequest;
 use Illuminate\Http\Request;
 // use Datatables;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\DataTables as DataTables;
-use DB;
 
 class RekapController extends Controller
 {
@@ -20,6 +25,107 @@ class RekapController extends Controller
         $kelas = Kelas::all();
         return view('rekap.index', compact('kelas'));
     }
+
+    public function generatePdfAndSendToWA(Request $request)
+{
+    try {
+        // Validasi input
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'kelas_id' => 'required|integer',
+        ]);
+
+        // Mendapatkan data dari request
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $kelasId = $request->input('kelas_id');
+
+        $cek = RekapRequest::where('status', 'pending')->where('id', 1)->get();
+        if ($cek->count() > 0 ){
+            return response()->json(['message' => 'Rekapsi sedang diproses, silakan tunggu', 'status' => 'warning'], 400);
+        }
+
+        $rekapRequest = RekapRequest::create([
+        'kelas_id' => $request->kelas_id,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'status' => 'pending', // status awal bisa disesuaikan
+    ]);
+        // Lanjutkan dengan proses lainnya
+        // ...
+
+        return response()->json(['message' => 'Proses berhasil', 'status' => 'success', 'data' => $rekapRequest],200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+    // Fungsi untuk mengirim rekap ke WhatsApp
+    private function sendRekapToWA($pdfUrl, $numbers)
+    {
+        try {
+            // Misalnya kita menggunakan HTTP client untuk mengirim permintaan ke bot WhatsApp
+            Http::post('http://localhost:3000/send-rekap', [
+                'pdf_url' => $pdfUrl,
+                'numbers' => $numbers,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error sending rekap to WA', ['error' => $e->getMessage()]);
+            throw $e; // Lempar kembali exception jika perlu
+        }
+    }
+
+    public function requestRekap(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'kelas_id' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+
+        // Simpan data rekap request
+        $rekapRequest = RekapRequest::create([
+            'kelas_id' => $request->kelas_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'status' => 'pending', // status awal adalah pending
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Rekap request has been saved']);
+    }
+
+    // Fungsi untuk mendapatkan rekap yang pending
+    public function getPendingRekap()
+    {
+        $requests = RekapRequest::where('status', 'pending')->where('id', 1)->get();
+        if ($requests->isEmpty()) {
+            return response()->json(['message' => 'No pending rekap request found', 'status' => 'failed'], 404);
+        }
+        return response()->json(['data' => $requests, 'status' => 'success'], 200);
+    }
+
+    // Fungsi untuk memperbarui status rekap request
+    public function updateRekapStatus()
+    {
+
+        $rekapRequest = RekapRequest::find(1);
+        if ($rekapRequest) {
+            $rekapRequest->start_date = null;
+            $rekapRequest->end_date = null;
+            $rekapRequest->kelas_id = null;
+            $rekapRequest->status = "kosong";
+            $rekapRequest->save();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['error' => 'Rekap request not found'], 404);
+    }
+
+
 
     public function sendPDFtoWA(Request $request)
     {
@@ -105,9 +211,32 @@ class RekapController extends Controller
         return response()->json(['url' => asset("storage/$encodedFileName"), 'name' => $encodedFileName], 200);
     }
 
+    public function getNoWa(Request $request)
+    {
+        // Validasi token
+        if ($request->token == '12345678') {
+            // dd($request->all());
+            // Validasi kelas_id
+            $request->validate(['kelas_id' => 'required|string']);
+            $kelasId = $request->kelas_id;
+
+            // Ambil nomor WhatsApp berdasarkan kelas
+            $noWaList = data_siswa::where('kelas_id', $kelasId)->pluck('No_wa');
+
+            if ($noWaList->isEmpty()) {
+                return response()->json(['error' => 'Tidak ada data untuk kelas ini.'], 404);
+            }
+
+            return response()->json(['data' => $noWaList, 'status' => 'success'], 200);
+        } else {
+            return response()->json(['error' => 'Token tidak valid.'], 401);
+        }
+    }
+
 
     public function dataKelas()
     {
+
         $kelas = Kelas::all();
         // send json response data kelas to server
         return response()->json(['data' => $kelas], 200);
@@ -309,6 +438,44 @@ class RekapController extends Controller
         // Ambil semua kelas untuk dropdown
         $kelas = Kelas::all();
         return view('rekap.index', compact('rekap', 'kelas'));
+    }
+
+    public function sendWAPdf(Request $request)
+    {
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $kelasId = $request->input('kelasId');
+
+        // Ambil data siswa berdasarkan kelas
+        $students = data_siswa::where('kelas_id', $kelasId)->get();
+
+        if ($students->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada data siswa ditemukan']);
+        }
+
+        // Generate PDF berdasarkan tanggal dan kelas
+        $pdf = Pdf::loadView('rekap.pdf', compact('startDate', 'endDate', 'kelasId'));
+        $pdfPath = public_path('rekap_absensi.pdf');
+        $pdf->save($pdfPath);
+
+        // Loop untuk setiap siswa dan kirim pesan WhatsApp
+        foreach ($students as $siswa) {
+            $phoneNumber = $siswa->no_wa; // Pastikan nomor sudah dalam format internasional
+            $message = "*Rekap Absensi*\n\n" .
+                       "Nama: {$siswa->nama}\n" .
+                       "Kelas: {$siswa->kelas->nama_kelas}\n" .
+                       "Tanggal: {$startDate} s/d {$endDate}\n\n" .
+                       "Silakan cek file PDF yang dilampirkan.";
+
+            // Kirim pesan dan lampiran PDF menggunakan bot WhatsApp API
+            Http::post('http://localhost:3000/send-message-pdf', [
+                'number' => $phoneNumber,
+                'message' => $message,
+                'file' => $pdfPath,
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Pesan berhasil dikirim ke semua siswa']);
     }
 
     public function hitungRekap(Request $request)
