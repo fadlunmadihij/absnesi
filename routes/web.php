@@ -151,6 +151,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.update-password');
+
 
     Route::get('detail_rekap', [RekapController::class, 'detail_rekap']);
 });

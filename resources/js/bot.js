@@ -126,7 +126,7 @@ const sendPdfToMultipleWhatsApp = async (noWaList, pdfUrl) => {
 
             // Jeda 5-10 detik antar pengiriman pesan
             await new Promise((resolve) =>
-                setTimeout(resolve, Math.random() * (10000 - 5000) + 5000)
+                setTimeout(resolve, Math.random() * (15000 - 10000) + 10000)
             );
 
             await client.sendMessage(`${formattedNomor}@c.us`, media, {

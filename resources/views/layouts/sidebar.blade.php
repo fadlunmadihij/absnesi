@@ -69,10 +69,10 @@
                 <i class="fas fa-fw fa-file-alt"></i> Example Data Siswa
             </a>
             <a class="dropdown-item {{ Request::is('tahap1') ? 'active' : '' }}" href="/tahap1">
-                <i class="fas fa-fw fa-file-alt"></i> Tahap Analisi 1
+                <i class="fas fa-fw fa-file-alt"></i> Tahap Analisis 1
             </a>
             <a class="dropdown-item {{ Request::is('tahap2') ? 'active' : '' }}" href="/tahap2">
-                <i class="fas fa-fw fa-file-alt"></i> Tahap Analisi 2
+                <i class="fas fa-fw fa-file-alt"></i> Tahap Analisis 2
             </a>
             <a class="dropdown-item {{ Request::is('normalisasi') ? 'active' : '' }}" href="/normalisasi">
                 <i class="fas fa-fw fa-file-alt"></i> Matrik Ternormalisasi

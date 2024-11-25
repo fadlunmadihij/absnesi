@@ -93,7 +93,7 @@ function generateAndSendPDF() {
         return;
     }
     // Tentukan nomor WhatsApp tujuan
-    const phoneNumber = '628819616445'; // Ganti dengan nomor WhatsApp yang diinginkan
+    const phoneNumber = '6281554089508'; // Ganti dengan nomor WhatsApp yang diinginkan
 
     // Tentukan pesan yang akan dikirimkan
     const message = encodeURIComponent('sendToWali');  // Ganti dengan pesan yang diinginkan

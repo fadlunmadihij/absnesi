@@ -48,6 +48,7 @@
                     <th>Alpa (A)</th>
                     <th>NA (A)</th>
                     <th>Hasil Akhir</th>
+                    <th>Kategori</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,6 +96,7 @@
                         '<td>' + item.alpa_count + '</td>' +
                         '<td>' + item.nilai_alpa + '</td>' +
                         '<td>' + item.nilai_akhir + '</td>' +
+                        '<td>' + item.kategori + '</td>' +
                         '</tr>';
                     $('#table-rangking tbody').append(row);
                 });

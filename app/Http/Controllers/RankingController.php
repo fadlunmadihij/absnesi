@@ -120,11 +120,27 @@ class RankingController extends Controller
                     ($temp["nilai_izin"] * $this->bobot["izin"]) +
                     ($temp["nilai_hadir"] * $this->bobot["hadir"])
             ];
+
+            $temp["kategori"] = $this->tentukanKategori($temp["nilai_akhir"]);
             $hasil->push($temp); // Menambahkan hasil normalisasi siswa ke koleksi hasil
         }
 
         return $hasil;
     }
+
+        private function tentukanKategori($nilaiAkhir)
+    {
+        if ($nilaiAkhir >= 0.9) {
+            return "Siswa Terbaik";
+        } elseif ($nilaiAkhir >= 0.8) {
+            return "Siswa Berprestasi";
+        } elseif ($nilaiAkhir >= 0.7) {
+            return "Siswa Aktif";
+        } else {
+            return "Perlu Bimbingan";
+        }
+    }
+
     // Fungsi untuk menghitung skor izin dengan batas tertentu
     private function count_izin($data)
     {

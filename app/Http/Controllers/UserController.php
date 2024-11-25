@@ -123,4 +123,33 @@ class UserController extends Controller
 
         return redirect()->route('profile')->with('success', 'Profile updated successfully');
     }
+
+    public function updatePassword(Request $request)
+    {
+        // Validasi input password
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ], [
+            'current_password.required' => 'Password lama harus diisi.',
+            'new_password.required' => 'Password baru harus diisi.',
+            'new_password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'new_password.min' => 'Password baru harus minimal 8 karakter.',
+        ]);
+
+        // Ambil user yang sedang login
+        $user = Auth::user();
+
+        // Periksa apakah password lama cocok
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password lama tidak sesuai.']);
+        }
+
+        // Update password baru
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+    return redirect()->route('profile')->with('success', 'Password berhasil diubah.');
+    }
+
 }
