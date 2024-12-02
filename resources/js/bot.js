@@ -146,7 +146,7 @@ const sendPdfToMultipleWhatsApp = async (noWaList, pdfUrl) => {
 // Fungsi untuk mengubah awalan '08' menjadi '628'
 function formatNomorWA(nomor) {
     if (nomor.startsWith("08")) {
-        return "628" + nomor.slice(1);
+        return "62" + nomor.slice(1);
     }
     return nomor;
 }

@@ -1,3 +1,5 @@
-2024/11/24-16:50:53.237 2890 Reusing MANIFEST C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
-2024/11/24-16:50:53.391 2890 Recovering log #3
-2024/11/24-16:50:53.392 2890 Reusing old log C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Local Storage\leveldb/000003.log 
+2024/11/28-13:20:03.475 1c94 Reusing MANIFEST C:\laragon\www\absnesi\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2024/11/28-13:20:03.476 1c94 Recovering log #7
+2024/11/28-13:20:03.476 1c94 Level-0 table #10: started
+2024/11/28-13:20:03.494 1c94 Level-0 table #10: 14609 bytes OK
+2024/11/28-13:20:03.506 1c94 Delete type=0 #7

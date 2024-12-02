@@ -69,7 +69,7 @@
     <table border="0" style="width: 100%; border: 0;">
         <tr>
             <td style="width: 10%;">
-                <img src="https://pertanian.jatimprov.go.id/wp-content/uploads/2019/10/logo-provinsi-jawa-timur.png"
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_East_Java.svg/1200px-Coat_of_arms_of_East_Java.svg.png"
                     width="15%" alt="Logo Sekolah">
             </td>
             <td style="text-align: center; ">

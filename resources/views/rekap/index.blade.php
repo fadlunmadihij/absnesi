@@ -88,12 +88,14 @@ function generateAndSendPDF() {
     const endDate = document.getElementById('end_date').value;
     const kelasId = document.getElementById('kelas').value;
 
+
     if (!startDate || !endDate || !kelasId) {
         alert("Mohon lengkapi rentang tanggal dan pilih kelas.");
         return;
     }
+    console.log(kelasId);
     // Tentukan nomor WhatsApp tujuan
-    const phoneNumber = '6281554089508'; // Ganti dengan nomor WhatsApp yang diinginkan
+    const phoneNumber = '6285706819201'; // Ganti dengan nomor WhatsApp yang diinginkan
 
     // Tentukan pesan yang akan dikirimkan
     const message = encodeURIComponent('sendToWali');  // Ganti dengan pesan yang diinginkan
@@ -168,6 +170,49 @@ function generateAndSendPDF() {
             alert('Terjadi kesalahan, coba lagi nanti.');
         }
     });
+};
+const viewPdf = () => {
+    let startDate = document.getElementById('start_date').value;
+    let endDate = document.getElementById('end_date').value;
+    let kelasId = document.getElementById('kelas').value;
+
+    console.log(`start_date: ${startDate}, end_date: ${endDate}, kelas: ${kelasId}`);
+
+    // Buat form secara dinamis
+    let form = $('<form>', {
+        action: '/rekap/view/pdf',
+        method: 'POST',
+        target: '_blank' // membuka file PDF di tab baru
+    });
+
+    // Tambahkan CSRF token
+    form.append($('<input>', {
+        type: 'hidden',
+        name: '_token',
+        value: $('meta[name="csrf-token"]').attr('content')
+    }));
+
+    // Tambahkan input data startDate, endDate, dan kelasId
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'startDate',
+        value: startDate
+    }));
+
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'endDate',
+        value: endDate
+    }));
+
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'kelasId',
+        value: kelasId
+    }));
+
+    // Tambahkan form ke body dan submit
+    form.appendTo('body').submit();
 };
 
     const downloadPdf = () => {
